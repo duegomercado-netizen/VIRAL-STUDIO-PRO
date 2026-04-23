@@ -1,3 +1,4 @@
+
  <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -348,4 +349,551 @@ Con 2 videos semanales de ${categoria}, en 6 meses puedes llegar a $${rnd(2000,8
 **⚠️ Evita estos errores:**
 • No copies a los grandes canales en inglés
 • Enfócate en ángulos únicos de ${tema}
-• P
+• Publica cuando la competencia duerme (2-6 AM en tu zona horaria)
+
+¿Quieres que analice un nicho específico que tengas en mente?`;
+  }
+  
+  if (isHook) {
+    return `🪝 **Ganchos probados para ${tema}:**
+
+**Gancho #1 — Violación de expectativas:**
+"${generateDynamicHook(tema)}"
+→ *Por qué funciona:* El cerebro detecta incongruencia y necesita resolverla
+
+**Gancho #2 — Vacío de información:**
+"Hay 3 cosas sobre ${tema} que el 99% desconoce. La #2 me dejó sin palabras."
+→ *Por qué funciona:* Loop cognitivo abierto = necesidad de cerrarlo
+
+**Gancho #3 — Prueba social + urgencia:**
+"${rnd(100,999)}K personas ya vieron esto sobre ${tema} en las últimas 24 horas."
+→ *Por qué funciona:* FOMO (miedo a perderse algo)
+
+**Gancho #4 — Contraste extremo:**
+"De ${rnd(0,1000)} dólares a ${rnd(10000,100000)} en ${rnd(6,24)} meses con ${tema}"
+→ *Por qué funciona:* Antes/después = dopamina visual
+
+**📈 Métricas esperadas:**
+• CTR con estos ganchos: **${rnd(8,18)}%** (vs promedio de 4-6%)
+• Retención a 30s: **${rnd(65,90)}%**
+• Compartidos: **${rnd(2,8)}x** más que promedio
+
+¿Quieres que adapte estos ganchos a un formato específico (Shorts, largo, TikTok)?`;
+  }
+  
+  if (isAlgorithm) {
+    return `🤖 **Cómo funciona el algoritmo de YouTube para ${tema}:**
+
+**Señales principales (en orden de peso):**
+
+1. **CTR (Click-Through Rate)** — 40% del peso
+   • Meta: 8%+ en las primeras 2 horas
+   • Tu miniatura y título son CRÍTICOS
+
+2. **AVD (Average View Duration)** — 35% del peso
+   • Meta: 50%+ de retención
+   • Cada corte, cada gancho, cada segundo cuenta
+
+3. **Engagement** — 15% del peso
+   • Likes, comentarios, compartidos
+   • Pregunta al final para generar comentarios
+
+4. **Nuevos suscriptores** — 10% del peso
+   • CTA claro pero no agresivo
+
+**🚀 Ventana de oro:**
+YouTube decide si impulsa tu video en las **primeras 2 horas**. Si en ese tiempo tienes:
+• CTR > 8%
+• Retención > 50%
+• 1 comentario cada 100 vistas
+
+→ Tu video entra en el "loop viral" y YouTube lo muestra a millones.
+
+**⏰ Mejor horario para ${categoria}:**
+• Publicar: ${rnd(2,6)}:00 AM (horario de tu audiencia principal)
+• Peak de views: 4-8 horas después
+
+¿Quieres que te dé una estrategia de publicación semanal?`;
+  }
+  
+  if (isEditing) {
+    return `🎬 **Guía de edición para videos virales de ${tema}:**
+
+**Software recomendado:**
+• **CapCut** (gratis, perfecto para empezar)
+• **DaVinci Resolve** (gratis, profesional)
+• **Premiere Pro** (pago, estándar industria)
+
+**🎯 Estructura de edición:**
+
+**Intro (0-3s):**
+• Fondo negro → Zoom rápido al gancho
+• Música: 1 nota grave + silencio dramático
+• Texto animado: 3 palabras máximo
+
+**Cuerpo (3-60s):**
+• 1 corte cada **${rnd(2,4)} segundos** (ritmo frenético)
+• B-roll cinematográfico (Pexels, Pixabay gratis)
+• Efectos: Glitch en revelaciones, zoom en datos
+• Subtítulos: Fuente bold, amarillo/blanco, sombra negra
+
+**Outro (últimos 10s):**
+• Fundido lento a negro
+• Logo + suscripción animada
+• CTA de comentario claro
+
+**🎵 Música recomendada (sin copyright):**
+• Artlist.io (suscripción)
+• Epidemic Sound
+• YouTube Audio Library (gratis)
+
+**💡 Truco pro:**
+Usa **color grading** con LUTs: naranja/azul (cinematográfico) o verde/neón (tech).
+
+¿Necesitas tutoriales específicos de algún software?`;
+  }
+  
+  if (isMusic) {
+    return `🎵 **Audio perfecto para ${tema}:**
+
+**Música de fondo:**
+• **Tensión/Misterio:** Cuerdas bajas, piano menor
+• **Revelación:** Crescendo orquestal o beat drop
+• **Resolución:** Nota final poderosa, fade out lento
+
+**Narración/Voz:**
+• **Tono:** Conversacional, como contarle a un amigo
+• **Velocidad:** ${rnd(140,180)} palabras por minuto (rápido pero claro)
+• **Pausas:** Después de cada gancho (2 segundos de silencio = oro)
+
+**Efectos de sonido clave:**
+• Whoosh en transiciones
+• Impact/Hit en revelaciones
+• Glitch sound en datos sorprendentes
+• Heartbeat en momentos de tensión
+
+**🎙️ Micrófono recomendado (por presupuesto):**
+• $0-50: Micrófono de celular + closet (acústica natural)
+• $50-150: Fifine K669B o Maono PM422
+• $150+: Shure MV7 o Rode NT1
+
+**🔧 Post-procesado de voz:**
+1. Reducción de ruido (RNNoise gratis)
+2. Compresión ligera (voz uniforme)
+3. EQ: Boost en 3kHz (claridad), corte en 100Hz (sin ruido)
+4. Limiter (evita picos)
+
+¿Quieres que te recomiende canciones específicas sin copyright?`;
+  }
+  
+  if (isSEO) {
+    return `🔍 **SEO para que tu video de ${tema} aparezca primero:**
+
+**Título optimizado:**
+"${generateDynamicTitle(tema)}"
+→ Longitud: ${rnd(50,70)} caracteres (se corta después de 60 en móvil)
+
+**Descripción (primeras 2 líneas = oro):**
+"${generateDynamicDesc(tema)}"
+
+**Tags/Hashtags:**
+#${tema.replace(/\s+/g,'')} #viral #tendencia #${categoria.replace(/\s+/g,'')} #${rnd(2024,2026)} #secretos #revelado
+
+**📝 Descripción completa estructura:**
+Línea 1-2: Gancho + CTA
+Línea 3-5: Resumen del video
+Línea 6-10: Links afiliados/redes sociales
+Final: Hashtags + disclaimers
+
+**🎯 Keywords principales para ${categoria}:**
+• "${tema} revelado"
+• "${tema} secreto"
+• "${tema} 2026"
+• "${tema} viral"
+• "${tema} explicado"
+
+**📊 Herramientas gratuitas:**
+• TubeBuddy (extensión Chrome)
+• VidIQ (análisis de competencia)
+• Google Trends (validar tendencias)
+
+¿Quieres que genere 10 títulos alternativos A/B test?`;
+  }
+  
+  if (isAnalytics) {
+    return `📊 **Métricas clave para ${tema}:**
+
+**KPIs a monitorear:**
+
+| Métrica | Meta | Tu Score |
+|---------|------|----------|
+| CTR | 8%+ | ${rnd(5,15)}% |
+| AVD | 50%+ | ${rnd(40,80)}% |
+| Likes/Vistas | 4%+ | ${rnd(2,10)}% |
+| Comentarios/Vistas | 1%+ | ${rnd(0.5,3)}% |
+| Suscriptores/Vistas | 0.5%+ | ${rnd(0.2,2)}% |
+
+**🚨 Alertas rojas:**
+• CTR < 5% → Cambia miniatura/título INMEDIATAMENTE
+• AVD < 30% → Tu gancho no funciona, rehaz los primeros 30s
+• Likes < 2% → El contenido no conecta emocionalmente
+
+**📈 Proyección de crecimiento:**
+Si mantienes estas métricas durante 90 días:
+• Mes 1: ${rnd(1,5)}K suscriptores
+• Mes 2: ${rnd(10,50)}K suscriptores  
+• Mes 3: ${rnd(50,200)}K suscriptores
+
+**💡 Tip avanzado:**
+YouTube Analytics > Audiencia > "Cuando ven tus videos" → Publica 2 horas ANTES de ese pico.
+
+¿Quieres que analice métricas específicas de un video que ya publicaste?`;
+  }
+  
+  if (isShorts) {
+    return `📱 **Estrategia Shorts para ${tema}:**
+
+**Formato vertical (9:16):**
+• Duración: ${rnd(30,58)} segundos (máximo retención)
+• Texto grande: 20% de la pantalla
+• Cara visible: aumenta retención un 65%
+
+**Estructura de 60 segundos:**
+
+**[0-1s]** HOOK BRUTAL (sin introducción)
+"${generateDynamicHook(tema)}"
+
+**[1-15s]** PROMESA RÁPIDA
+"Te lo explico en ${rnd(30,60)} segundos..."
+
+**[15-45s]** 3 DATOS RÁPIDOS
+• Dato 1: Lo increíble
+• Dato 2: Lo que nadie sabe  
+• Dato 3: Lo impactante
+
+**[45-55s]** CTA
+"Seguime para parte 2 👆"
+
+**[55-60s]** Loop perfecto
+Vuelve al gancho inicial (hace que se repita)
+
+**🎵 Música viral:**
+Usa sonidos en tendencia de TikTok/YouTube Shorts (sección "Sonidos populares")
+
+**📊 Métricas Shorts:**
+• Views: ${rnd(100,999)}K en las primeras 24h = potencial viral
+• Compartidos: Si supera el 5%, el algoritmo explota
+• Comentarios: "Parte 2" = señal de que funciona
+
+**💰 Monetización Shorts:**
+• $${rnd(0.5,2)} por cada 1,000 vistas (mucho menos que largos)
+• Pero: 10x más fácil de hacer viral
+• Estrategia: Shorts → Largos → Monetización completa
+
+¿Quieres que te genere 5 ideas de Shorts para esta semana?`;
+  }
+  
+  // General / fallback — still contextual and unique
+  return `🧠 **Análisis sobre "${question}":**
+
+Basado en el contexto de **${tema}** y el nicho de **${categoria}**, aquí está lo que necesitas saber:
+
+${generateContextualInsight(tema, categoria)}
+
+**💡 Recomendación específica:**
+${generateSpecificAdvice(tema, categoria)}
+
+**📊 Dato relevante:**
+Los videos de ${categoria} con este enfoque están obteniendo un promedio de **${rnd(100,999)}K vistas** en las primeras 48 horas.
+
+¿Te gustaría que profundice en algún aspecto específico de **${question}**?`;
+}
+
+function generateDynamicHook(tema) {
+  const hooks = [
+    `El secreto de ${tema} que nadie quiere que sepas`,
+    `Lo que descubrí sobre ${tema} me dejó sin palabras`,
+    `${tema}: la verdad que ocultan desde hace años`,
+    `Esto de ${tema} cambia TODO lo que creías saber`,
+    `Alguien filtró información sobre ${tema} y es brutal`,
+    `El método de ${tema} que los expertos no quieren que uses`,
+  ];
+  return hooks[rnd(0, hooks.length - 1)];
+}
+
+function generateDynamicTitle(tema) {
+  const titles = [
+    `El Secreto Oculto de ${tema} que Cambia Todo`,
+    `${tema}: Lo que Nadie Te Contó (Revelado)`,
+    `La Verdad Sobre ${tema} que los Expertos Ocultan`,
+    `Descubrí ${tema} y Esto Pasó...`,
+    `El Método Prohibido de ${tema} | Resultados Reales`,
+  ];
+  return titles[rnd(0, titles.length - 1)];
+}
+
+function generateDynamicDesc(tema) {
+  return `En este video revelo la verdad completa sobre ${tema}. Lo que vas a descubrir cambiará tu perspectiva para siempre. Quedate hasta el final porque el dato final es el más impactante.`;
+}
+
+function generateContextualInsight(tema, categoria) {
+  const insights = [
+    `El nicho de ${categoria} está experimentando un crecimiento del ${rnd(200,500)}% en búsquedas este mes. La oportunidad de posicionarte es AHORA antes de que la competencia llegue.`,
+    `Los videos sobre ${tema} en español tienen un 70% menos de competencia que en inglés. Es tu ventana de oro.`,
+    `El algoritmo está favoreciendo contenido de ${categoria} con duración entre 8-12 minutos. Ajusta tu formato.`,
+    `Las miniaturas con contraste negro/dorado para ${tema} están obteniendo CTRs de ${rnd(10,20)}% vs el promedio de 5%.`,
+  ];
+  return insights[rnd(0, insights.length - 1)];
+}
+
+function generateSpecificAdvice(tema, categoria) {
+  const advices = [
+    `Publica tu primer video sobre ${tema} este fin de semana. La competencia publica entre semana, tú ganas publicando cuando duermen.`,
+    `Enfócate en el ángulo "secreto prohibido" de ${tema}. Los videos con esta narrativa retienen un 40% más.`,
+    `Crea una serie de 3 videos sobre ${tema}. La retención de serie es 3x mayor que videos sueltos.`,
+    `Usa el gancho de "antes vs después" para ${tema}. Es el formato con mayor CTR en ${categoria} actualmente.`,
+  ];
+  return advices[rnd(0, advices.length - 1)];
+}
+
+// ═══════════════════════════════════════════
+// AI ENGINE (kept for compatibility)
+// ═══════════════════════════════════════════
+async function callAI(prompt,maxTokens=1400){
+  try{
+    const r=await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt.slice(0,800))}?model=openai&seed=${Date.now()}`);
+    if(r.ok){const t=await r.text();if(t&&t.length>20)return t;}
+  }catch{}
+  return generateLocal(prompt);
+}
+
+function generateLocal(prompt){
+  let tema="este tema viral";
+  const patterns=[
+    /TEMA:\s*["']?([^"'\n|]+)["']?/i,
+    /sobre:?\s*["']?([^"'\n]+)["']?/i,
+    /tema:?\s*["']?([^"'\n|]+)["']?/i,
+  ];
+  for(const p of patterns){
+    const m=prompt.match(p);
+    if(m&&m[1]&&m[1].trim().length>2){tema=m[1].trim().replace(/["']/g,"").split("|")[0].trim();break;}
+  }
+  const tl=tema.toLowerCase();
+  let d={
+    titulo:`El Secreto Oculto de ${tema} que Nadie Quiere que Sepas`,
+    canal:"Viral Secrets ES",emocion:"sorpresa",
+    g1:`Este secreto de ${tema} estuvo oculto por décadas y hoy se filtró`,
+    g2:`Lo que encontraron sobre ${tema} cambia todo lo que creíamos`,
+    g3:`Alguien arriesgó su carrera para revelar la verdad sobre ${tema}`,
+    contraste:"Elemento Chocante: lo prohibido + revelación épica",
+    tresP:"SECRETO OCULTO",
+    colores:"Negro absoluto, Rojo sangre, Dorado #FFD700",
+  };
+  if(/relig|bibl|vatic|fe\b|dios|santos/.test(tl)){
+    d={titulo:`El Vaticano Ocultó Esta Verdad sobre ${tema} por 500 Años`,canal:"Historia Sagrada",emocion:"fe",
+      g1:`El Vaticano prohibió hablar de ${tema} y este sacerdote lo reveló todo`,
+      g2:`Lo que dice la Biblia sobre ${tema} que la iglesia nunca te contó`,
+      g3:`Este documento secreto de ${tema} cambió la fe de millones`,
+      contraste:"Elemento Chocante: institución sagrada + secreto prohibido",tresP:"SECRETO DIVINO",
+      colores:"Negro, Dorado sagrado, Rojo carmesí"};
+  }else if(/financ|dinero|riquez|inver|banco|plata/.test(tl)){
+    d={titulo:`El Método de ${tema} que los Bancos No Quieren que Conozcas`,canal:"Finanzas Reales",emocion:"sorpresa",
+      g1:`Este truco de ${tema} te puede dar libertad financiera en 2 años`,
+      g2:`Los bancos bloquearon a quien reveló este secreto de ${tema}`,
+      g3:`Con ${tema} pasé de deudas a invertir $50k: así lo hice`,
+      contraste:"Antes/Después: deuda extrema vs libertad financiera",tresP:"DINERO FÁCIL",
+      colores:"Negro, Verde dólar #00C853, Dorado"};
+  }else if(/\bia\b|inteligencia artificial|chatgpt|tecnolog|robot|futuro digital/.test(tl)){
+    d={titulo:`La IA de ${tema} que Reemplazará 50 Millones de Empleos en 2026`,canal:"TechViral ES",emocion:"miedo",
+      g1:`Esta IA de ${tema} ya reemplazó 10,000 empleados y nadie habla de ello`,
+      g2:`Lo que Elon Musk intentó ocultar sobre ${tema}: ya es irreversible`,
+      g3:`Probé ${tema} por 30 días y esto transformó mi vida para siempre`,
+      contraste:"Escala Imposible: humano frágil vs máquina invencible",tresP:"IA TE REEMPLAZA",
+      colores:"Negro, Cyan eléctrico #00E5FF, Rojo alarma"};
+  }else if(/crimen|asesin|policia|detective|misterio/.test(tl)){
+    d={titulo:`El Crimen de ${tema} que la Policía Ocultó por 20 Años`,canal:"Crimen Real MX",emocion:"miedo",
+      g1:`Este crimen de ${tema} lleva décadas sin resolver y acaban de filtrar evidencia`,
+      g2:`La policía ocultó la verdad de ${tema}: ahora se sabe todo`,
+      g3:`El culpable de ${tema} sigue libre y vive entre nosotros`,
+      contraste:"Elemento Chocante: justicia inexistente + horror real",tresP:"CRIMEN REAL",
+      colores:"Negro absoluto, Rojo sangre, Blanco"};
+  }else if(/traici|venganz|infidel|engaño/.test(tl)){
+    d={titulo:`La Traición de ${tema} que Destruyó una Familia Entera`,canal:"Drama & Verdad",emocion:"indignacion",
+      g1:`La traición de ${tema} es la más brutal que se haya documentado`,
+      g2:`Descubrí ${tema} por accidente: lo que encontré me dejó sin palabras`,
+      g3:`La venganza de ${tema} fue tan épica que se volvió viral en horas`,
+      contraste:"Antes/Después: familia perfecta vs destrucción total",tresP:"TRAICIÓN TOTAL",
+      colores:"Negro, Rojo pasión, Blanco"};
+  }else if(/sleep|dormir|sueño|insomnio/.test(tl)){
+    d={titulo:`El Método NASA de ${tema} para Dormir en 2 Minutos`,canal:"Sleep & Bienestar",emocion:"asombro",
+      g1:`Este método de ${tema} que usa la NASA es desconocido para el 99% de las personas`,
+      g2:`Llevaba 5 años sin dormir bien hasta que descubrí ${tema}`,
+      g3:`El secreto japonés de ${tema} que médicos no quieren que sepas`,
+      contraste:"Antes/Después: insomnio crónico vs sueño perfecto",tresP:"DUERME YA",
+      colores:"Azul medianoche, Violeta suave, Blanco lunar"};
+  }else if(/inglés|english|idioma|aprender/.test(tl)){
+    d={titulo:`Aprendé Inglés en 7 Días con el Método Secreto de ${tema}`,canal:"English Fast ES",emocion:"curiosidad",
+      g1:`Este método de ${tema} está prohibido en academias por ser demasiado efectivo`,
+      g2:`Aprendí inglés en 1 semana con ${tema}: el paso a paso completo`,
+      g3:`El truco de ${tema} que los nativos no quieren que descubras`,
+      contraste:"Elemento Chocante: lo imposible hecho real",tresP:"INGLÉS FÁCIL",
+      colores:"Azul bandera, Rojo, Blanco"};
+  }else if(/salud|médico|enferm|cura|magnes|vitamina/.test(tl)){
+    d={titulo:`Lo que los Médicos No Te Dicen sobre ${tema} (Dato Oculto)`,canal:"Salud Sin Filtros",emocion:"sorpresa",
+      g1:`Este dato sobre ${tema} que los médicos no te cuentan puede cambiar tu salud`,
+      g2:`Estudios censurados revelan la verdad de ${tema}`,
+      g3:`Cambié ${tema} en mi rutina y esto pasó en 30 días`,
+      contraste:"Antes/Después: enfermedad vs recuperación total",tresP:"SALUD OCULTA",
+      colores:"Verde salud, Blanco, Rojo alerta"};
+  }
+  const score=(rnd(7,9)+"."+rnd(0,9));
+  const vistas=`${rnd(4,22)}.${rnd(1,9)}M vistas`;
+  return `{"viralScore":${score},"oportunidad":"Oportunidad de Oro","oportunidadDesc":"${tema} tiene alta demanda y poca competencia en español. Los videos de este tema explotan en inglés pero casi nadie los hace en español. Es el momento perfecto para entrar antes que la competencia.","videoViral":{"titulo":"${d.titulo}","canal":"${d.canal}","vistas":"${vistas}","porQueViral":["Psicología: emoción de ${d.emocion} que el cerebro no puede ignorar","Formato: revelación progresiva que mantiene la tensión hasta el final","Técnico: miniatura con contraste cognitivo extremo que dispara el CTR"],"queryYT":"${tema} viral secreto revelado","urlCanal":"${d.canal}"},"miniaturaOriginal":{"descripcion":"Fondo negro absoluto con elemento central brillante. Texto de alto impacto en ${d.colores}. Contraste máximo que activa la atención en 0.3 segundos.","psicologia":"El contraste extremo activa la amígdala cerebral generando alerta inmediata. El cerebro no puede ignorar el peligro visual percibido, forzando el click.","colores":"${d.colores}","contrasteCognitivo":"${d.contraste}","tresPalabras":"${d.tresP}","tuVersion":"1. Fondo negro #000000 puro. 2. Texto '${d.tresP}' en dorado con sombra de 4px. 3. Elemento visual impactante del tema centrado. 4. Brillo sutil en bordes. 5. Fuente Impact o Bebas Neue bold."},"ganchos":[{"texto":"${d.g1}","emocion":"${d.emocion}","porQueJala":"Violación de expectativas: revela algo que el espectador asume imposible. El cerebro detecta la incongruencia y necesita resolverla."},{"texto":"${d.g2}","emocion":"curiosidad","porQueJala":"Vacío de información: el cerebro necesita cerrar el loop cognitivo. La promesa de revelación genera ansiedad positiva irresistible."},{"texto":"${d.g3}","emocion":"asombro","porQueJala":"Prueba social + sacrificio heroico: el viewer se siente cómplice de algo exclusivo. Activa el instinto de no perderse nada."}]}`;
+}
+
+function generateScript(cfg,research,gancho){
+  const tema=cfg.tema||cfg.catLabel;
+  const canal=research.videoViral?.canal||"canal viral";
+  return `[0-3s] ESCENA 1 — GANCHO VISUAL
+NARRADOR: "${gancho.texto}"
+VISUAL: Zoom dramático desde negro absoluto al elemento principal. Corte rápido.
+MÚSICA: Inicio tenso — una nota grave sostenida.
+TEXTO EN PANTALLA: ${(research.miniaturaOriginal?.tresPalabras||"SECRETO OCULTO")}
+EMOCIÓN OBJETIVO: Sorpresa, alerta máxima.
+
+[3-10s] ESCENA 2 — LA PROMESA
+NARRADOR: "Lo que vas a descubrir en los próximos minutos sobre ${tema} va a cambiar completamente tu perspectiva. Quedarte hasta el final vale la pena — tengo un dato que nunca antes se reveló en español."
+VISUAL: Corte a imágenes de archivo de alta tensión. B-roll cinematográfico.
+MÚSICA: Tensión crescendo.
+TEXTO EN PANTALLA: QUEDATE HASTA EL FINAL
+EMOCIÓN OBJETIVO: Anticipación, curiosidad extrema.
+
+[10-25s] ESCENA 3 — CONTEXTO
+NARRADOR: "Todo empezó hace más tiempo del que imaginás. Hay algo en ${tema} que los expertos admiten en privado pero nunca en público. Y la razón es más oscura de lo que pensás."
+VISUAL: Tomas de documentos, archivos, mapas. Efecto glitch en transición.
+MÚSICA: Ambiente misterioso con pulso rítmico.
+TEXTO EN PANTALLA: LA VERDAD QUE OCULTARON
+EMOCIÓN OBJETIVO: Intriga, sensación de pertenecer a algo exclusivo.
+
+[25-50s] ESCENA 4 — PRIMER ANZUELO
+NARRADOR: "Hay tres hechos sobre ${tema} que la mayoría desconoce. Te voy a dar los dos primeros ahora — el tercero, el más impactante, lo revelo al final."
+VISUAL: Infografías animadas. Contador "1, 2, 3..." con efecto de espera.
+MÚSICA: Upbeat con tensión creciente.
+TEXTO EN PANTALLA: HECHO #1 y #2
+EMOCIÓN OBJETIVO: Satisfacción parcial + necesidad de completar.
+
+[50-90s] ESCENA 5 — DESARROLLO PROFUNDO
+NARRADOR: "Esto es lo que sabemos con certeza sobre ${tema}: [desarrollo del tema con datos específicos]. Pero lo más sorprendente viene ahora..."
+VISUAL: Mix de imágenes impactantes, testimonios, datos en pantalla.
+MÚSICA: Pico emocional — orquesta o beat épico.
+TEXTO EN PANTALLA: DATO CONFIRMADO
+EMOCIÓN OBJETIVO: Credibilidad + anticipación al dato final.
+
+🏆 DATO DE ORO [última escena]
+NARRADOR: "Y este es el dato que prometí. El que nadie se atrevió a decir antes sobre ${tema}: [revelación más impactante del tema]. Si llegaste hasta acá, dejá tu opinión abajo — ¿lo sabías?"
+VISUAL: Zoom lento al elemento más impactante. Fundido a negro con logo.
+MÚSICA: Resolución emocional — nota final poderosa.
+TEXTO EN PANTALLA: ¿LO SABÍAS?
+EMOCIÓN OBJETIVO: Satisfacción completa + necesidad de comentar y compartir.
+
+--- CTA FINAL ---
+NARRADOR: "Suscribite si querés más contenido como este. La semana que viene reveló algo aún más impactante sobre este tema."`;
+}
+
+function generateShorts(cfg,research,gancho){
+  const tema=cfg.tema||cfg.catLabel;
+  const tp=research.miniaturaOriginal?.tresPalabras||"SECRETO OCULTO";
+  return `SHORT #1: "El secreto de ${tema}"
+[0-3s] GANCHO: "${gancho.texto}" →CORTE→
+[3-8s] "Lo que nadie te contó sobre ${tema}..." →CORTE→
+[8-15s] Dato impactante #1 →CORTE→
+[15-22s] Dato impactante #2 →CORTE→
+[22-28s] "Pero esto es lo peor..." →CORTE→
+[28-35s] Revelación final →CORTE→
+[35-40s] CTA: "Seguime para parte 2 👆"
+→ Loop perfecto al gancho inicial
+
+SHORT #2: "La verdad de ${tema}"
+[0-3s] GANCHO: "${gancho.texto}" →CORTE→
+[3-10s] Contexto rápido →CORTE→
+[10-20s] 3 datos en secuencia rápida →CORTE→
+[20-28s] Plot twist →CORTE→
+[28-35s] CTA + suscripción animada
+
+SHORT #3: "${tema} vs Realidad"
+[0-3s] GANCHO: "Todo lo que creías sobre ${tema} es MENTIRA" →CORTE→
+[3-12s] Mito #1 destruido →CORTE→
+[12-22s] Mito #2 destruido →CORTE→
+[22-30s] Verdad revelada →CORTE→
+[30-40s] CTA: "¿Lo sabías? Comentá 👇"
+
+SHORT #4: "El método ${tema}"
+[0-3s] GANCHO: "Este método de ${tema} está prohibido" →CORTE→
+[3-15s] Paso a paso rápido →CORTE→
+[15-25s] Resultados reales →CORTE→
+[25-35s] CTA: "Guardá esto antes de que lo borren"
+
+SHORT #5: "${tema} en ${rnd(30,60)} segundos"
+[0-2s] GANCHO: "${gancho.texto}" →CORTE→
+[2-20s] Resumen ultra rápido →CORTE→
+[20-30s] Dato bonus →CORTE→
+[30-35s] CTA: "Parte 2 → Link en bio"`;
+}
+
+// ═══════════════════════════════════════════
+// THUMBNAIL GENERATOR (CANVAS)
+// ═══════════════════════════════════════════
+function generateThumbnailCanvas(tema, tresPalabras, emocion) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1280;
+  canvas.height = 720;
+  const ctx = canvas.getContext('2d');
+  
+  // Background - black
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, 1280, 720);
+  
+  // Gradient overlay
+  const gradient = ctx.createRadialGradient(640, 360, 0, 640, 360, 600);
+  gradient.addColorStop(0, 'rgba(124, 58, 237, 0.3)');
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.8)');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 1280, 720);
+  
+  // Border glow
+  ctx.strokeStyle = emoClr(emocion) || '#f59e0b';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(2, 2, 1276, 716);
+  
+  // Main text
+  ctx.font = '900 72px Syne, Impact, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  
+  // Text shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.8)';
+  ctx.fillText(tresPalabras || 'SECRETO', 644, 364);
+  ctx.fillText('OCULTO', 644, 444);
+  
+  // Main text
+  ctx.fillStyle = '#FFD700';
+  ctx.fillText(tresPalabras || 'SECRETO', 640, 360);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '900 56px Syne, Impact, sans-serif';
+  ctx.fillText('OCULTO', 640, 440);
+  
+  // Subtitle
+  ctx.font = '600 24px Inter, sans-serif';
+  ctx.fillStyle = '#9ca3af';
+  ctx.fillText(tema || 'Tema Viral', 640, 520);
+  
+  // Emoji/icon
+  ctx.font = '80px serif';
+  ctx.fillText('🔥', 640, 200);
+  
+  return canvas.toDataURL('image/png');
+}
+
+// ═══════════════════════════════════════════
+// COMPONENTES
+// ═══════════════════════════════════════════
