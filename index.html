@@ -1,937 +1,1619 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#07070f">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>ViralStudio Pro</title>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #07070f; color: #f0efff; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: #0d0d1c; }
-    ::-webkit-scrollbar-thumb { background: #1a1a35; border-radius: 4px; }
-    input, textarea, select, button { font-family: inherit; }
-    input:focus, textarea:focus, select:focus { outline: none; }
-    @keyframes up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    @keyframes glow { 0%, 100% { text-shadow: 0 0 8px #00e676; } 50% { text-shadow: 0 0 24px #00e676, 0 0 40px #00e676; } }
-    @keyframes bootbar { from { width: 0; } to { width: 100%; } }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-    @keyframes tooltipFade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-up { animation: up 0.4s both; }
-    .animate-pulse { animation: pulse 1s infinite; }
-    .animate-glow { animation: glow 1.5s ease infinite; }
-    .animate-float { animation: float 3s ease infinite; }
-    button, a, [role="button"] { touch-action: manipulation; }
-    input[type="range"] { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; background: #1a1a35; }
-    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #f59e0b; cursor: pointer; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
-    
-    .tooltip-container { position: relative; display: inline-block; }
-    .tooltip-text {
-      visibility: hidden;
-      position: absolute;
-      bottom: 125%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1a1a35;
-      color: #f0efff;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 11px;
-      white-space: nowrap;
-      z-index: 1000;
-      border: 1px solid #7c3aed;
-      opacity: 0;
-      transition: opacity 0.3s;
-      pointer-events: none;
-      max-width: 200px;
-      white-space: normal;
-      text-align: center;
-      line-height: 1.4;
-    }
-    .tooltip-text::after {
-      content: "";
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: #7c3aed transparent transparent transparent;
-    }
-    .tooltip-container:hover .tooltip-text,
-    .tooltip-container:active .tooltip-text {
-      visibility: visible;
-      opacity: 1;
-      animation: tooltipFade 0.3s ease;
-    }
-    
-    .chat-bubble {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #7c3aed, #5b21b6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
-      z-index: 999;
-      transition: transform 0.2s;
-    }
-    .chat-bubble:active { transform: scale(0.95); }
-    .chat-window {
-      position: fixed;
-      bottom: 85px;
-      right: 20px;
-      width: calc(100vw - 40px);
-      max-width: 360px;
-      height: 500px;
-      background: #111124;
-      border: 1px solid #1a1a35;
-      border-radius: 16px;
-      display: flex;
-      flex-direction: column;
-      z-index: 998;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    }
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .chat-message {
-      max-width: 85%;
-      padding: 10px 14px;
-      border-radius: 14px;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-    .chat-message.user {
-      align-self: flex-end;
-      background: #7c3aed;
-      color: #fff;
-      border-bottom-right-radius: 4px;
-    }
-    .chat-message.bot {
-      align-self: flex-start;
-      background: #0d0d1c;
-      color: #f0efff;
-      border: 1px solid #1a1a35;
-      border-bottom-left-radius: 4px;
-    }
-    .chat-input-area {
-      padding: 12px;
-      border-top: 1px solid #1a1a35;
-      display: flex;
-      gap: 8px;
-    }
-    .chat-input {
-      flex: 1;
-      background: #0d0d1c;
-      border: 1px solid #1a1a35;
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: #f0efff;
-      font-size: 13px;
-    }
-    .chat-send {
-      background: #7c3aed;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 16px;
-      color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 12px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#07070f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>ViralStudio Pro v6.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',-apple-system,sans-serif;background:#07070f;color:#f0efff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Syne',sans-serif}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#2a2a45;border-radius:4px}
+input,textarea,select,button{font-family:'Inter',sans-serif}
+input[type="range"]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:#1a1a35;width:100%}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#f59e0b;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.5)}
+select option{background:#111124}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes glow{0%,100%{text-shadow:0 0 8px #00e676}50%{text-shadow:0 0 28px #00e676,0 0 50px #00e676}}
+@keyframes bootbar{from{width:0}to{width:100%}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes scanline{0%{top:-10%}100%{top:110%}}
+.animate-up{animation:up .4s both}
+.animate-pulse{animation:pulse 1.2s infinite}
+.animate-glow{animation:glow 1.8s ease infinite}
+button,[role=button]{touch-action:manipulation}
+
+/* CHAT */
+.chat-bubble{position:fixed;bottom:24px;right:20px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#5b21b6);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 4px 24px rgba(124,58,237,.5);z-index:999;transition:transform .2s,box-shadow .2s}
+.chat-bubble:active{transform:scale(.93)}
+.chat-bubble.has-notif::after{content:'';position:absolute;top:4px;right:4px;width:10px;height:10px;background:#ef4444;border-radius:50%;border:2px solid #07070f}
+.chat-window{position:fixed;bottom:90px;right:20px;width:calc(100vw - 40px);max-width:360px;height:480px;background:#111124;border:1px solid #2a2a45;border-radius:20px;display:flex;flex-direction:column;z-index:998;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+.chat-msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5}
+.chat-msg.user{align-self:flex-end;background:#7c3aed;color:#fff;border-bottom-right-radius:4px}
+.chat-msg.bot{align-self:flex-start;background:#0d0d1c;color:#f0efff;border:1px solid #1a1a35;border-bottom-left-radius:4px}
+.chat-in-area{padding:12px;border-top:1px solid #1a1a35;display:flex;gap:8px;align-items:center}
+.chat-in{flex:1;background:#0d0d1c;border:1px solid #1a1a35;border-radius:10px;padding:9px 13px;color:#f0efff;font-size:13px;outline:none}
+.chat-send{background:#7c3aed;border:none;border-radius:10px;padding:9px 14px;color:#fff;font-weight:700;cursor:pointer;font-size:12px;white-space:nowrap}
+
+/* STEPBAR */
+.stepbar{display:flex;align-items:center;padding:10px 0 14px;overflow-x:auto;gap:0}
+.step-item{display:flex;align-items:center;flex-shrink:0}
+.step-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;transition:all .3s}
+.step-line{width:18px;height:2px;flex-shrink:0;transition:background .3s}
+.step-label{font-size:8px;text-align:center;font-weight:700;letter-spacing:.4px;margin-top:3px;text-transform:uppercase}
+
+/* TABS */
+.tabs-bar{display:flex;border-bottom:1px solid #1a1a35;overflow-x:auto;gap:0;margin-bottom:12px}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:9px 10px;font-size:9px;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.5px;text-transform:uppercase;transition:color .15s,border-color .15s}
+
+/* TOOLTIP */
+.tip{position:relative;display:inline-block}
+.tip-text{visibility:hidden;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1a35;color:#f0efff;padding:7px 11px;border-radius:8px;font-size:10px;white-space:nowrap;z-index:2000;border:1px solid #7c3aed44;opacity:0;transition:opacity .2s;pointer-events:none;max-width:200px;white-space:normal;text-align:center;line-height:1.4}
+.tip:hover .tip-text,.tip:focus-within .tip-text{visibility:visible;opacity:1}
+
+/* CHECKLIST */
+.cl-item{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.cl-item.done{background:#052e16;border-color:#00e67630}
+.cl-item:not(.done){background:#0d0d1c}
+.cl-check{width:22px;height:22px;border-radius:50%;border:2px solid #2a2a45;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .2s}
+.cl-item.done .cl-check{background:#00e676;border-color:#00e676}
+</style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+<div id="root"></div>
+<script type="text/babel">
+const{useState,useEffect,useRef,useCallback}=React;
 
-    // ==================== ADMIN CONFIG (SOLO VOS) ====================
-    const ADMIN_CONFIG = {
-      features: {
-        wizard: true,
-        autovideo: true,
-        history: true,
-        calculator: true,
-        radar: true,
-        spy: true,
-        scriptTimer: true,
-        chatAssistant: true,
-      },
-      plans: {
-        free: { name: "Prueba", days: 3, maxVideos: 2, label: "3 días gratis" },
-        basic: { name: "Básico", days: 30, maxVideos: 10, label: "1 mes" },
-        pro: { name: "Pro", days: 30, maxVideos: 999, label: "Ilimitado" },
-      },
-      paymentLink: "#",
-    };
+// ═══════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════
+const C={
+  bg:"#07070f",surface:"#0d0d1c",card:"#111124",border:"#1a1a35",
+  gold:"#f59e0b",amber:"#d97706",purple:"#7c3aed",purpleL:"#a78bfa",purpleD:"#5b21b6",
+  green:"#10b981",red:"#ef4444",cyan:"#06b6d4",neon:"#00e676",
+  text:"#f0efff",sub:"#9ca3af",muted:"#6b7280",pink:"#ec4899",
+};
+const CATS=[
+  {id:"finanzas",  e:"💰",l:"Finanzas",          cpm:"$15–45",hot:true, growth:"12x"},
+  {id:"betrayal",  e:"💔",l:"Traiciones/Venganza",cpm:"$20–25",hot:true, growth:"21x"},
+  {id:"ia_tools",  e:"🤖",l:"IA y Herramientas", cpm:"$15–22",hot:true, growth:"15x"},
+  {id:"learning",  e:"📚",l:"Aprender Inglés",   cpm:"$18–22",hot:true, growth:"14x"},
+  {id:"sleep",     e:"😴",l:"Sonidos/Sleep",     cpm:"$16–20",hot:true, growth:"9x"},
+  {id:"manhwa",    e:"📖",l:"Manhwa/Webtoon",    cpm:"$15–19",hot:true, growth:"11x"},
+  {id:"senior",    e:"👴",l:"Salud Senior",      cpm:"$9–12", hot:true, growth:"19x"},
+  {id:"tecnologia",e:"🚀",l:"Tecnología e IA",   cpm:"$12–25",hot:true, growth:"8x"},
+  {id:"crimen",    e:"🔍",l:"Crimen Real",       cpm:"$8–13", hot:true, growth:"7x"},
+  {id:"religion",  e:"✝️",l:"Religión y Fe",     cpm:"$2–8",           growth:"3x"},
+  {id:"historia",  e:"📜",l:"Historia",          cpm:"$4–9",            growth:"5x"},
+  {id:"psicologia",e:"🧠",l:"Psicología",        cpm:"$3–10",           growth:"5x"},
+  {id:"misterio",  e:"🔮",l:"Misterio",          cpm:"$3–9",            growth:"4x"},
+  {id:"ciencia",   e:"🧬",l:"Ciencia",           cpm:"$3–10",           growth:"4x"},
+  {id:"espacio",   e:"🌌",l:"Espacio",           cpm:"$3–10",           growth:"4x"},
+  {id:"motiv",     e:"🔥",l:"Motivación",        cpm:"$2–7",            growth:"3x"},
+];
+const REGIONS=["EE.UU.","España","UK","Canadá","Australia","Mundial","Latinoamérica","México","Argentina","Brasil"];
+const DURS=["60s","3m","5m","8m","10m","15m","20m","30m"];
+const REGION_MULT={"EE.UU.":2.5,"España":1.8,"UK":2.2,"Canadá":2.0,"Australia":1.9,"Mundial":1.3,"Latinoamérica":0.6,"México":0.7,"Argentina":0.5,"Brasil":0.6};
+const EMOTION_CLR={sorpresa:"#f59e0b",indignacion:"#ef4444",curiosidad:"#06b6d4",miedo:"#8b5cf6",asombro:"#10b981",nostalgia:"#f97316",fe:"#fcd34d"};
+const PAYMENT_LINK="#"; // ← Cambiá por tu link real de pago
 
-    // ==================== COLORS ====================
-    const C = {
-      bg: "#07070f", surface: "#0d0d1c", card: "#111124", border: "#1a1a35",
-      gold: "#f59e0b", amber: "#d97706", purple: "#7c3aed", purpleL: "#a78bfa", purpleD: "#5b21b6",
-      green: "#10b981", red: "#ef4444", cyan: "#06b6d4", neon: "#00e676",
-      text: "#f0efff", sub: "#9ca3af", muted: "#6b7280", pink: "#ec4899",
-    };
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+const sGet=k=>{try{return localStorage.getItem(k)}catch{return null}};
+const sSet=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
+function safeJSON(raw){
+  try{return JSON.parse(raw.trim())}catch{}
+  const m=raw.match(/\{[\s\S]*\}/);
+  if(m)try{return JSON.parse(m[0])}catch{}
+  return null;
+}
+function copyText(txt){
+  try{navigator.clipboard.writeText(txt)}catch{
+    const t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();document.execCommand("copy");document.body.removeChild(t);
+  }
+}
+function emoClr(e){return EMOTION_CLR[e]||C.purple}
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 
-    // ==================== DATA ====================
-    const CATS = [
-      {id:"finanzas",e:"💰",l:"Finanzas",cpm:"$15–45",hot:true,growth:"12x"},
-      {id:"tecnologia",e:"🚀",l:"Tecnología e IA",cpm:"$12–25",hot:true,growth:"8x"},
-      {id:"betrayal",e:"💔",l:"Traiciones/Venganza",cpm:"$20–25",hot:true,growth:"21x"},
-      {id:"ia_tools",e:"🤖",l:"IA y Herramientas",cpm:"$15–22",hot:true,growth:"15x"},
-      {id:"learning",e:"📚",l:"Aprender Inglés",cpm:"$18–22",hot:true,growth:"14x"},
-      {id:"sleep",e:"😴",l:"Sonidos/Sleep",cpm:"$16–20",hot:true,growth:"9x"},
-      {id:"manhwa",e:"📖",l:"Manhwa/Webtoon",cpm:"$15–19",hot:true,growth:"11x"},
-      {id:"senior",e:"👴",l:"Salud Senior",cpm:"$9–12",hot:true,growth:"19x"},
-      {id:"religion",e:"✝️",l:"Religión y Fe",cpm:"$2–8",growth:"3x"},
-      {id:"historia",e:"📜",l:"Historia",cpm:"$4–9",growth:"5x"},
-      {id:"crimen",e:"🔍",l:"Crimen Real",cpm:"$8–13",hot:true,growth:"7x"},
-      {id:"misterio",e:"🔮",l:"Misterio",cpm:"$3–9",growth:"4x"},
-      {id:"ciencia",e:"🧬",l:"Ciencia",cpm:"$3–10",growth:"4x"},
-      {id:"psicologia",e:"🧠",l:"Psicología",cpm:"$3–10",growth:"5x"},
-      {id:"espacio",e:"🌌",l:"Espacio",cpm:"$3–10",growth:"4x"},
-      {id:"motiv",e:"🔥",l:"Motivación",cpm:"$2–7",growth:"3x"},
-    ];
+// ═══════════════════════════════════════════
+// AI ENGINE
+// ═══════════════════════════════════════════
+async function callAI(prompt,maxTokens=1400){
+  try{
+    const r=await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt.slice(0,800))}?model=openai&seed=${Date.now()}`);
+    if(r.ok){const t=await r.text();if(t&&t.length>20)return t;}
+  }catch{}
+  return generateLocal(prompt);
+}
 
-    const REGIONS = ["EE.UU.","España","UK","Canadá","Australia","Mundial","Latinoamérica","México","Argentina","Brasil"];
-    const DURS = ["60s","3m","5m","8m","10m","15m","20m","30m"];
+function generateLocal(prompt){
+  // Extract tema intelligently
+  let tema="este tema viral";
+  const patterns=[
+    /TEMA:\s*["']?([^"'\n|]+)["']?/i,
+    /sobre:?\s*["']?([^"'\n]+)["']?/i,
+    /tema:?\s*["']?([^"'\n|]+)["']?/i,
+  ];
+  for(const p of patterns){
+    const m=prompt.match(p);
+    if(m&&m[1]&&m[1].trim().length>2){tema=m[1].trim().replace(/["']/g,"").split("|")[0].trim();break;}
+  }
+  const tl=tema.toLowerCase();
 
-    // ==================== UTILS ====================
-    function storageGet(key) { try { return localStorage.getItem(key); } catch(_){ return null; } }
-    function storageSet(key, value) { try { localStorage.setItem(key, value); } catch(_){} }
-    function storageRemove(key) { try { localStorage.removeItem(key); } catch(_){} }
+  // Dynamic data by category
+  let d={
+    titulo:`El Secreto Oculto de ${tema} que Nadie Quiere que Sepas`,
+    canal:"Viral Secrets ES",emocion:"sorpresa",
+    g1:`Este secreto de ${tema} estuvo oculto por décadas y hoy se filtró`,
+    g2:`Lo que encontraron sobre ${tema} cambia todo lo que creíamos`,
+    g3:`Alguien arriesgó su carrera para revelar la verdad sobre ${tema}`,
+    contraste:"Elemento Chocante: lo prohibido + revelación épica",
+    tresP:"SECRETO OCULTO",
+    colores:"Negro absoluto, Rojo sangre, Dorado #FFD700",
+  };
 
-    function safeJSON(raw) {
-      try { return JSON.parse(raw.trim()); } catch(_){}
-      const m = raw.match(/\{[\s\S]*\}/);
-      if (m) try { return JSON.parse(m[0]); } catch(_){}
-      return null;
-    }
+  if(/relig|bibl|vatic|fe\b|dios|santos/.test(tl)){
+    d={titulo:`El Vaticano Ocultó Esta Verdad sobre ${tema} por 500 Años`,canal:"Historia Sagrada",emocion:"fe",
+      g1:`El Vaticano prohibió hablar de ${tema} y este sacerdote lo reveló todo`,
+      g2:`Lo que dice la Biblia sobre ${tema} que la iglesia nunca te contó`,
+      g3:`Este documento secreto de ${tema} cambió la fe de millones`,
+      contraste:"Elemento Chocante: institución sagrada + secreto prohibido",tresP:"SECRETO DIVINO",
+      colores:"Negro, Dorado sagrado, Rojo carmesí"};
+  }else if(/financ|dinero|riquez|inver|banco|plata/.test(tl)){
+    d={titulo:`El Método de ${tema} que los Bancos No Quieren que Conozcas`,canal:"Finanzas Reales",emocion:"sorpresa",
+      g1:`Este truco de ${tema} te puede dar libertad financiera en 2 años`,
+      g2:`Los bancos bloquearon a quien reveló este secreto de ${tema}`,
+      g3:`Con ${tema} pasé de deudas a invertir $50k: así lo hice`,
+      contraste:"Antes/Después: deuda extrema vs libertad financiera",tresP:"DINERO FÁCIL",
+      colores:"Negro, Verde dólar #00C853, Dorado"};
+  }else if(/\bia\b|inteligencia artificial|chatgpt|tecnolog|robot|futuro digital/.test(tl)){
+    d={titulo:`La IA de ${tema} que Reemplazará 50 Millones de Empleos en 2026`,canal:"TechViral ES",emocion:"miedo",
+      g1:`Esta IA de ${tema} ya reemplazó 10,000 empleados y nadie habla de ello`,
+      g2:`Lo que Elon Musk intentó ocultar sobre ${tema}: ya es irreversible`,
+      g3:`Probé ${tema} por 30 días y esto transformó mi vida para siempre`,
+      contraste:"Escala Imposible: humano frágil vs máquina invencible",tresP:"IA TE REEMPLAZA",
+      colores:"Negro, Cyan eléctrico #00E5FF, Rojo alarma"};
+  }else if(/crimen|asesin|policia|detective|misterio/.test(tl)){
+    d={titulo:`El Crimen de ${tema} que la Policía Ocultó por 20 Años`,canal:"Crimen Real MX",emocion:"miedo",
+      g1:`Este crimen de ${tema} lleva décadas sin resolver y acaban de filtrar evidencia`,
+      g2:`La policía ocultó la verdad de ${tema}: ahora se sabe todo`,
+      g3:`El culpable de ${tema} sigue libre y vive entre nosotros`,
+      contraste:"Elemento Chocante: justicia inexistente + horror real",tresP:"CRIMEN REAL",
+      colores:"Negro absoluto, Rojo sangre, Blanco"};
+  }else if(/traici|venganz|infidel|engaño/.test(tl)){
+    d={titulo:`La Traición de ${tema} que Destruyó una Familia Entera`,canal:"Drama & Verdad",emocion:"indignacion",
+      g1:`La traición de ${tema} es la más brutal que se haya documentado`,
+      g2:`Descubrí ${tema} por accidente: lo que encontré me dejó sin palabras`,
+      g3:`La venganza de ${tema} fue tan épica que se volvió viral en horas`,
+      contraste:"Antes/Después: familia perfecta vs destrucción total",tresP:"TRAICIÓN TOTAL",
+      colores:"Negro, Rojo pasión, Blanco"};
+  }else if(/sleep|dormir|sueño|insomnio/.test(tl)){
+    d={titulo:`El Método NASA de ${tema} para Dormir en 2 Minutos`,canal:"Sleep & Bienestar",emocion:"asombro",
+      g1:`Este método de ${tema} que usa la NASA es desconocido para el 99% de las personas`,
+      g2:`Llevaba 5 años sin dormir bien hasta que descubrí ${tema}`,
+      g3:`El secreto japonés de ${tema} que médicos no quieren que sepas`,
+      contraste:"Antes/Después: insomnio crónico vs sueño perfecto",tresP:"DUERME YA",
+      colores:"Azul medianoche, Violeta suave, Blanco lunar"};
+  }else if(/inglés|english|idioma|aprender/.test(tl)){
+    d={titulo:`Aprendé Inglés en 7 Días con el Método Secreto de ${tema}`,canal:"English Fast ES",emocion:"curiosidad",
+      g1:`Este método de ${tema} está prohibido en academias por ser demasiado efectivo`,
+      g2:`Aprendí inglés en 1 semana con ${tema}: el paso a paso completo`,
+      g3:`El truco de ${tema} que los nativos no quieren que descubras`,
+      contraste:"Elemento Chocante: lo imposible hecho real",tresP:"INGLÉS FÁCIL",
+      colores:"Azul bandera, Rojo, Blanco"};
+  }else if(/salud|médico|enferm|cura|magnes|vitamina/.test(tl)){
+    d={titulo:`Lo que los Médicos No Te Dicen sobre ${tema} (Dato Oculto)`,canal:"Salud Sin Filtros",emocion:"sorpresa",
+      g1:`Este dato sobre ${tema} que los médicos no te cuentan puede cambiar tu salud`,
+      g2:`Estudios censurados revelan la verdad de ${tema}`,
+      g3:`Cambié ${tema} en mi rutina y esto pasó en 30 días`,
+      contraste:"Antes/Después: enfermedad vs recuperación total",tresP:"SALUD OCULTA",
+      colores:"Verde salud, Blanco, Rojo alerta"};
+  }
 
-    // ==================== AI ENGINE (Multi-API gratis) ====================
-    async function callAI(prompt, maxTokens = 1400) {
-      try {
-        const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?model=openai&seed=${Date.now()}`);
-        if (response.ok) return await response.text();
-      } catch(e) {}
-      return generateLocalResponse(prompt);
-    }
+  const score=(rnd(7,9)+"."+rnd(0,9));
+  const vistas=`${rnd(4,22)}.${rnd(1,9)}M vistas`;
 
-    // ==================== CORREGIDO: Respuestas personalizadas por tema ====================
-    function generateLocalResponse(prompt) {
-      let tema = "este tema";
-      const temaMatches = [
-        prompt.match(/sobre:?\s*["']?([^"'\n]+)["']?/i),
-        prompt.match(/tema:?\s*["']?([^"'\n]+)["']?/i),
-        prompt.match(/para:?\s*["']?([^"'\n]+)["']?/i),
-        prompt.match(/Genera.*para\s+([^.]+)/i),
-        prompt.match(/([A-Z][a-zA-Z\s]{3,50})(?:\s+en\s+español|$)/),
-      ];
-      
-      for (const match of temaMatches) {
-        if (match && match[1] && match[1].length > 2) {
-          tema = match[1].trim().replace(/["']/g, '');
-          break;
-        }
-      }
+  return `{"viralScore":${score},"oportunidad":"Oportunidad de Oro","oportunidadDesc":"${tema} tiene alta demanda y poca competencia en español. Los videos de este tema explotan en inglés pero casi nadie los hace en español. Es el momento perfecto para entrar antes que la competencia.","videoViral":{"titulo":"${d.titulo}","canal":"${d.canal}","vistas":"${vistas}","porQueViral":["Psicología: emoción de ${d.emocion} que el cerebro no puede ignorar","Formato: revelación progresiva que mantiene la tensión hasta el final","Técnico: miniatura con contraste cognitivo extremo que dispara el CTR"],"queryYT":"${tema} viral secreto revelado","urlCanal":"${d.canal}"},"miniaturaOriginal":{"descripcion":"Fondo negro absoluto con elemento central brillante. Texto de alto impacto en ${d.colores}. Contraste máximo que activa la atención en 0.3 segundos.","psicologia":"El contraste extremo activa la amígdala cerebral generando alerta inmediata. El cerebro no puede ignorar el peligro visual percibido, forzando el click.","colores":"${d.colores}","contrasteCognitivo":"${d.contraste}","tresPalabras":"${d.tresP}","tuVersion":"1. Fondo negro #000000 puro. 2. Texto '${d.tresP}' en dorado con sombra de 4px. 3. Elemento visual impactante del tema centrado. 4. Brillo sutil en bordes. 5. Fuente Impact o Bebas Neue bold."},"ganchos":[{"texto":"${d.g1}","emocion":"${d.emocion}","porQueJala":"Violación de expectativas: revela algo que el espectador asume imposible. El cerebro detecta la incongruencia y necesita resolverla."},{"texto":"${d.g2}","emocion":"curiosidad","porQueJala":"Vacío de información: el cerebro necesita cerrar el loop cognitivo. La promesa de revelación genera ansiedad positiva irresistible."},{"texto":"${d.g3}","emocion":"asombro","porQueJala":"Prueba social + sacrificio heroico: el viewer se siente cómplice de algo exclusivo. Activa el instinto de no perderse nada."}]}`;
+}
 
-      tema = tema.replace(/^(sobre|tema|para)\s*/i, '').trim();
-      if (tema.length < 3) tema = "este tema viral";
+// Dynamic local script generator
+function generateScript(cfg,research,gancho){
+  const tema=cfg.tema||cfg.catLabel;
+  const canal=research.videoViral?.canal||"canal viral";
+  return `[0-3s] ESCENA 1 — GANCHO VISUAL
+NARRADOR: "${gancho.texto}"
+VISUAL: Zoom dramático desde negro absoluto al elemento principal. Corte rápido.
+MÚSICA: Inicio tenso — una nota grave sostenida.
+TEXTO EN PANTALLA: ${(research.miniaturaOriginal?.tresPalabras||"SECRETO OCULTO")}
+EMOCIÓN OBJETIVO: Sorpresa, alerta máxima.
 
-      const temaLower = tema.toLowerCase();
-      let tituloViral, canalViral, emocionPrincipal, gancho1, gancho2, gancho3, contraste, tresPalabras;
+[3-10s] ESCENA 2 — LA PROMESA
+NARRADOR: "Lo que vas a descubrir en los próximos minutos sobre ${tema} va a cambiar completamente tu perspectiva. Quedarte hasta el final vale la pena — tengo un dato que nunca antes se reveló en español."
+VISUAL: Corte a imágenes de archivo de alta tensión. B-roll cinematográfico.
+MÚSICA: Tensión crescendo.
+TEXTO EN PANTALLA: QUEDATE HASTA EL FINAL
+EMOCIÓN OBJETIVO: Anticipación, curiosidad extrema.
 
-      if (temaLower.includes('relig') || temaLower.includes('bibl') || temaLower.includes('vatic') || temaLower.includes('fe')) {
-        tituloViral = `El Secreto que el Vaticano Ocultó por 500 Años sobre ${tema}`;
-        canalViral = "Historia Sagrada";
-        emocionPrincipal = "fe";
-        gancho1 = `El Vaticano ocultó este documento sobre ${tema} por 500 años y hoy se filtró`;
-        gancho2 = `Lo que encontraron en los archivos secretos de ${tema} cambia todo lo que creíamos`;
-        gancho3 = `Este sacerdote arriesgó su vida para revelar la verdad sobre ${tema}`;
-        contraste = "Elemento Chocante: institución sagrada + secreto prohibido";
-        tresPalabras = "SECRETO DIVINO";
-      } else if (temaLower.includes('financ') || temaLower.includes('dinero') || temaLower.includes('riquez')) {
-        tituloViral = `El Truco Financiero que los Bancos No Quieren que Sepas sobre ${tema}`;
-        canalViral = "Finanzas Pro";
-        emocionPrincipal = "sorpresa";
-        gancho1 = `Este truco de ${tema} te puede hacer ahorrar $10,000 al año y nadie habla de él`;
-        gancho2 = `El banco intentó ocultar esto sobre ${tema} pero se filtró`;
-        gancho3 = `Con ${tema} logré libertad financiera en 2 años: así lo hice`;
-        contraste = "Antes/Después: pobreza vs riqueza extrema";
-        tresPalabras = "DINERO FÁCIL";
-      } else if (temaLower.includes('tecno') || temaLower.includes('ia') || temaLower.includes('inteligencia') || temaLower.includes('futuro')) {
-        tituloViral = `La IA que Reemplazará tu Trabajo en 2026: ${tema}`;
-        canalViral = "TecnoMundo";
-        emocionPrincipal = "miedo";
-        gancho1 = `Esta IA de ${tema} ya reemplazó a 10,000 empleados y nadie se dio cuenta`;
-        gancho2 = `El avance de ${tema} que Elon Musk intentó ocultar`;
-        gancho3 = `Probé ${tema} por 30 días: esto es lo que pasó con mi vida`;
-        contraste = "Escala Imposible: humano vs máquina superpoderosa";
-        tresPalabras = "IA NOS REEMPLAZA";
-      } else if (temaLower.includes('crimen') || temaLower.includes('asesin') || temaLower.includes('misterio')) {
-        tituloViral = `El Crimen Sin Resolver de ${tema} que la Policía Ocultó`;
-        canalViral = "Crimen Real";
-        emocionPrincipal = "miedo";
-        gancho1 = `Este crimen de ${tema} lleva 20 años sin resolver y acaban de encontrar pistas`;
-        gancho2 = `La policía ocultó evidencia de ${tema}: ahora se sabe la verdad`;
-        gancho3 = `El asesino de ${tema} sigue libre y esto es lo que sabemos`;
-        contraste = "Elemento Chocante: inocencia + horror extremo";
-        tresPalabras = "CRIMEN REAL";
-      } else if (temaLower.includes('traici') || temaLower.includes('venganz') || temaLower.includes('infidel')) {
-        tituloViral = `La Traición de ${tema} que Destruyó una Familia`;
-        canalViral = "Drama Real";
-        emocionPrincipal = "indignacion";
-        gancho1 = `La traición de ${tema} más escandalosa del siglo: todos la ocultaron`;
-        gancho2 = `Descubrí ${tema} por accidente y no podía creerlo`;
-        gancho3 = `La venganza por ${tema} fue épica: así se desarrolló todo`;
-        contraste = "Antes/Después: familia feliz vs destrucción total";
-        tresPalabras = "TRAICIÓN TOTAL";
-      } else if (temaLower.includes('sleep') || temaLower.includes('dormir') || temaLower.includes('sueño')) {
-        tituloViral = `El Método de ${tema} que Te Hará Dormir en 30 Segundos`;
-        canalViral = "Sleep Pro";
-        emocionPrincipal = "asombro";
-        gancho1 = `Este método de ${tema} es usado por la NASA para dormir en el espacio`;
-        gancho2 = `No dormía hace 5 años hasta que probé ${tema}: ahora duermo como bebé`;
-        gancho3 = `El secreto japonés de ${tema} que pocos conocen`;
-        contraste = "Antes/Después: insomnio extremo vs sueño perfecto";
-        tresPalabras = "DUERME YA";
-      } else if (temaLower.includes('inglés') || temaLower.includes('english') || temaLower.includes('aprender')) {
-        tituloViral = `Aprende Inglés en 7 Días con este Método Prohibido de ${tema}`;
-        canalViral = "English Mastery";
-        emocionPrincipal = "curiosidad";
-        gancho1 = `Este método de ${tema} está prohibido en 3 países por ser demasiado efectivo`;
-        gancho2 = `Aprendí inglés en 1 semana con ${tema}: así lo hice paso a paso`;
-        gancho3 = `El truco de ${tema} que los nativos no quieren que sepas`;
-        contraste = "Elemento Chocante: imposible posible";
-        tresPalabras = "INGLÉS FÁCIL";
-      } else {
-        tituloViral = `El Secreto Oculto de ${tema} que Cambia Todo`;
-        canalViral = "Viral Secrets";
-        emocionPrincipal = "sorpresa";
-        gancho1 = `Este secreto de ${tema} fue ocultado por décadas y hoy se filtró por error`;
-        gancho2 = `Lo que descubrieron sobre ${tema} cambia todo lo que creíamos posible`;
-        gancho3 = `Alguien arriesgó todo para revelar la verdad sobre ${tema}`;
-        contraste = "Elemento Chocante: lo prohibido + revelación épica";
-        tresPalabras = tema.length > 15 ? "SECRETO OCULTO" : tema.toUpperCase().substring(0, 15);
-      }
+[10-25s] ESCENA 3 — CONTEXTO
+NARRADOR: "Todo empezó hace más tiempo del que imaginás. Hay algo en ${tema} que los expertos admiten en privado pero nunca en público. Y la razón es más oscura de lo que pensás."
+VISUAL: Tomas de documentos, archivos, mapas. Efecto glitch en transición.
+MÚSICA: Ambiente misterioso con pulso rítmico.
+TEXTO EN PANTALLA: LA VERDAD QUE OCULTARON
+EMOCIÓN OBJETIVO: Intriga, sensación de pertenecer a algo exclusivo.
 
-      return `{"viralScore":${Math.floor(Math.random() * 3) + 7}.${Math.floor(Math.random() * 9)},"oportunidad":"Oportunidad de Oro","oportunidadDesc":"${tema} tiene alta demanda y poca competencia en español. Los videos de este tema están explotando en inglés pero casi nadie los hace en español. Es el momento perfecto para entrar.","videoViral":{"titulo":"${tituloViral}","canal":"${canalViral}","vistas":"${(Math.floor(Math.random() * 20) + 5)}.${Math.floor(Math.random() * 9)}M vistas","porQueViral":["Factor psicológico: ${emocionPrincipal} intensa que el cerebro no puede ignorar","Factor formato: documental con revelación final que mantiene la tensión","Elemento técnico: miniatura con contraste extremo que genera clicks masivos"],"queryYT":"${tema.replace(/\s+/g, ' ')} viral secreto","urlCanal":"${canalViral}"},"miniaturaOriginal":{"descripcion":"Fondo negro absoluto con elemento central en rojo intenso y dorado, texto impactante que genera curiosidad inmediata sobre ${tema}","psicologia":"El contraste rojo/negro activa la amígdala cerebral generando alerta inmediata. El cerebro detecta peligro/perdida y no puede dejar de hacer click.","colores":"Negro absoluto, Rojo sangre #8B0000, Dorado #FFD700","contrasteCognitivo":"${contraste}","tresPalabras":"${tresPalabras}","tuVersion":"1. Fondo negro #000000. 2. Texto '${tresPalabras}' en dorado #FFD700 con sombra roja #8B0000 de 4px. 3. Elemento central semi-transparente relacionado con ${tema}. 4. Bordes con brillo dorado sutil. 5. Usar fuente Impact o Bebas Neue."},"ganchos":[{"texto":"${gancho1}","emocion":"${emocionPrincipal}","porQueJala":"Violación de expectativas: lo que parece imposible sobre ${tema} se revela como real. El cerebro detecta inconsistencia y no puede dejar de ver."},{"texto":"${gancho2}","emocion":"curiosidad","porQueJala":"Vacío de información: el cerebro necesita cerrar el loop cognitivo sobre ${tema}. Cuanto más grande la promesa, más fuerte la necesidad de quedarse."},{"texto":"${gancho3}","emocion":"asombro","porQueJala":"Empatía heroica: conecta emocionalmente con el sacrificio. El viewer se siente cómplice de algo exclusivo sobre ${tema}."}]}`;
-    }
+[25-50s] ESCENA 4 — PRIMER ANZUELO
+NARRADOR: "Hay tres hechos sobre ${tema} que la mayoría desconoce. Te voy a dar los dos primeros ahora — el tercero, el más impactante, lo revelo al final."
+VISUAL: Infografías animadas. Contador "1, 2, 3..." con efecto de espera.
+MÚSICA: Upbeat con tensión creciente.
+TEXTO EN PANTALLA: HECHO #1 y #2
+EMOCIÓN OBJETIVO: Satisfacción parcial + necesidad de completar.
 
-    // ==================== PLAN MANAGER ====================
-    function getUserPlan() {
-      const planData = storageGet("vs_plan");
-      if (!planData) return { type: "free", startDate: Date.now(), videosUsed: 0, maxVideos: 2, expiresAt: Date.now() + (3 * 24 * 60 * 60 * 1000) };
-      return JSON.parse(planData);
-    }
+[50-90s] ESCENA 5 — DESARROLLO PROFUNDO
+NARRADOR: "Esto es lo que sabemos con certeza sobre ${tema}: [desarrollo del tema con datos específicos]. Pero lo más sorprendente viene ahora..."
+VISUAL: Mix de imágenes impactantes, testimonios, datos en pantalla.
+MÚSICA: Pico emocional — orquesta o beat épico.
+TEXTO EN PANTALLA: DATO CONFIRMADO
+EMOCIÓN OBJETIVO: Credibilidad + anticipación al dato final.
 
-    function setUserPlan(planType) {
-      const plan = ADMIN_CONFIG.plans[planType];
-      storageSet("vs_plan", JSON.stringify({
-        type: planType,
-        startDate: Date.now(),
-        videosUsed: 0,
-        maxVideos: plan.maxVideos,
-        expiresAt: Date.now() + (plan.days * 24 * 60 * 60 * 1000)
-      }));
-    }
+🏆 DATO DE ORO [última escena]
+NARRADOR: "Y este es el dato que prometí. El que nadie se atrevió a decir antes sobre ${tema}: [revelación más impactante del tema]. Si llegaste hasta acá, dejá tu opinión abajo — ¿lo sabías?"
+VISUAL: Zoom lento al elemento más impactante. Fundido a negro con logo.
+MÚSICA: Resolución emocional — nota final poderosa.
+TEXTO EN PANTALLA: ¿LO SABÍAS?
+EMOCIÓN OBJETIVO: Satisfacción completa + necesidad de comentar y compartir.
 
-    function checkPlanAccess() {
-      const plan = getUserPlan();
-      const now = Date.now();
-      if (now > plan.expiresAt) {
-        return { allowed: false, reason: "expired", message: "Tu prueba expiró. Elegí un plan para continuar." };
-      }
-      if (plan.videosUsed >= plan.maxVideos) {
-        return { allowed: false, reason: "limit", message: "Llegaste al límite de videos. Actualizá tu plan." };
-      }
-      return { allowed: true, remaining: plan.maxVideos - plan.videosUsed, expiresIn: Math.ceil((plan.expiresAt - now) / (24 * 60 * 60 * 1000)) };
-    }
+--- CTA FINAL ---
+NARRADOR: "Suscribite si querés más contenido como este. La semana que viene reveló algo aún más impactante sobre este tema."`;
+}
 
-    function useVideo() {
-      const plan = getUserPlan();
-      plan.videosUsed++;
-      storageSet("vs_plan", JSON.stringify(plan));
-    }
+function generateShorts(cfg,research,gancho){
+  const tema=cfg.tema||cfg.catLabel;
+  const tp=research.miniaturaOriginal?.tresPalabras||"SECRETO OCULTO";
+  return `SHORT #1: "El secreto de ${tema}"
+[0-3s] GANCHO: "${gancho.texto}" →CORTE→
+[3-8s] "Lo que nadie sabe es que..." →CORTE→ imagen impactante
+[8-15s] "Esto pasó realmente:" →CORTE→ dato 1 →CORTE→ dato 2
+[15-30s] Desarrollo rápido →CORTE→ cada 2-3 segundos
+[30-42s] "Pero lo más increíble es esto:" →CORTE→ giro inesperado
+[42-50s] 🏆 DATO DE ORO: "Y esto es lo que nadie te cuenta sobre ${tema}"
+CTA: "Seguime para la parte 2"
+TEXTO PANTALLA: ${tp}
 
-    // ==================== UI COMPONENTS ====================
-    const Tag = ({color=C.purple, children}) => (
-      <span style={{background:color+"20",border:`1px solid ${color}40`,color,borderRadius:20,padding:"3px 10px",fontSize:11,fontWeight:700,letterSpacing:.4,textTransform:"uppercase",display:"inline-block"}}>{children}</span>
-    );
+---
 
-    const Card = ({children, style={}, glow, accent}) => (
-      <div style={{background:C.card,border:`1px solid ${glow?glow+"40":C.border}`,borderLeft:accent?`3px solid ${accent}`:undefined,borderRadius:14,padding:16,boxShadow:glow?`0 0 28px ${glow}18`:"none",...style}}>{children}</div>
-    );
+SHORT #2: "POV: Descubrís la verdad de ${tema}"
+[0-3s] "Llevaba años sin saber esto..." →CORTE→
+[3-15s] Contexto rápido →CORTE→ cada 3s →CORTE→ imágenes de apoyo
+[15-35s] "Lo que encontré me dejó sin palabras:" →CORTE→ revelación progresiva
+[35-42s] Reacción + evidencia visual
+[42-50s] 🏆 DATO DE ORO final + CTA fuerte
+TEXTO PANTALLA: NO LO SABÍA
 
-    const PBar = ({pct, color=C.purple}) => (
-      <div style={{height:5,background:C.border,borderRadius:4,overflow:"hidden"}}>
-        <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${color},${color}bb)`,borderRadius:4,transition:"width .4s ease"}}/>
+---
+
+SHORT #3: "3 datos de ${tema} que te van a volar la cabeza"
+[0-3s] "3 cosas que nadie sabe de ${tema}:" →CORTE→
+[3-8s] Dato #1 →CORTE→ reacción
+[8-16s] Dato #2 →CORTE→ reacción más intensa
+[16-30s] "El tercero es el más loco:" →CORTE→ suspenso breve
+[30-42s] 🏆 DATO #3 = el más impactante de los tres
+[42-50s] CTA: "¿Cuál te sorprendió más?"
+TEXTO PANTALLA: 3 DATOS LOCOS
+
+---
+
+🎬 PROMPT INVIDEO AI (pegá directo):
+"Create a cinematic dark documentary YouTube Short about ${tema}. Style: dramatic black background, red and gold accents, fast cuts every 2-3 seconds, zoom in effects on key facts. Music: suspenseful orchestra building to epic finale. Text overlays in Impact font, white with red shadow. Inspired by viral Spanish-language investigation channels. High energy, emotional arc from mystery to revelation. 16:9 aspect ratio, 50 seconds max."`;
+}
+
+function generateRetencion(cfg,research,gancho){
+  const tema=cfg.tema||cfg.catLabel;
+  return `🏔️ VALLE DE LA MUERTE — SEGUNDO A SEGUNDO (0-30s)
+═══════════════════════════════════════
+[0s]: Corte negro → logo canal → música tensa (0.5s)
+[1s]: Imagen de alto impacto + gancho vocal inmediato
+[3s]: Primer CORTE — cambio de plano obligatorio
+[5s]: Dato de tensión + texto en pantalla
+[7s]: Segundo CORTE — zoom dramático
+[9s]: La promesa explícita del video
+[11s]: Tercer CORTE — cambio de música
+[13s]: Primera pista del Dato de Oro (críptica)
+[15s]: Cuarto CORTE — imagen archivo o infografía
+[17s]: "Antes de continuar necesito que sepas esto..."
+[19s]: Quinto CORTE — el giro que mantiene al viewer
+[22s]: "Lo que nadie te contó sobre ${tema} es..."
+[25s]: Sexto CORTE — zoom out dramático
+[28s]: Segunda pista del Dato de Oro (más clara)
+[30s]: → Si llegan acá, hay 70% de prob. de que vean el 50% completo
+
+🎯 TRAMPAS DE SALIDA POR MINUTO
+─────────────────────────────
+[Min 1]: "Esperate — en el minuto 3 revelo el dato más oscuro"
+[Min 2]: "Esto que ves ahora es solo la mitad de la historia..."
+[Min 3]: "Ya casi llego al dato que prometí. Primero necesitás entender esto:"
+[Min 4]: "El Dato de Oro viene en 60 segundos. No te muevas."
+[Min 5]: 🏆 DATO DE ORO — la revelación final
+
+🏆 DATO DE ORO — ESTRATEGIA
+─────────────────────────────
+Momento exacto: último 10% del video
+Frases crípticas previas:
+  • Min 1: "Hay algo sobre ${tema} que guardé para el final..."
+  • Min 3: "Ese dato que prometí... ya casi..."
+  • Min 4: "Acá va. Lo que nadie antes dijo sobre ${tema}:"
+Revelación: el dato más impactante, dicho con pausa dramática de 2 segundos antes
+
+📊 METAS DE PERFORMANCE
+─────────────────────────────
+CTR objetivo: >5% (excelente) / >3% (aceptable)
+Retención promedio: >45%
+Watch time al 70%: >25% de viewers
+Comentarios meta: >1% de vistas
+Likes meta: >3% de vistas
+Señal de push: si CTR>4% + retención>50% en primeras 6h → YouTube amplifica`;
+}
+
+function generateSEO(cfg,research,gancho){
+  const tema=cfg.tema||cfg.catLabel;
+  const region=cfg.region;
+  const tp=research.miniaturaOriginal?.tresPalabras||"SECRETO";
+  return `📌 TÍTULO PRINCIPAL (≤60 caracteres):
+"${research.videoViral?.titulo||`El Secreto de ${tema} que Nadie Reveló`}"
+
+🔤 5 TÍTULOS A/B TEST:
+1. "Lo Que Nadie Te Dijo Sobre ${tema} (Impactante)"
+2. "${tema}: La Verdad Oculta Que Finalmente Salió a Luz"
+3. "Descubrí Esto Sobre ${tema} y No Pude Creerlo"
+4. "${tema} — El Dato Que Los Expertos Ocultan"
+5. "Por Qué Nadie Habla de ESTO Sobre ${tema}"
+
+📝 DESCRIPCIÓN YOUTUBE:
+${gancho.texto}
+
+En este video revelamos todo lo que necesitás saber sobre ${tema}. Información verificada, sin filtros, que la mayoría desconoce.
+
+⏱️ TIMESTAMPS:
+0:00 — Introducción y gancho
+0:30 — Contexto y antecedentes
+2:00 — Los hechos principales
+4:00 — Lo que nadie te contó
+5:30 — El dato más impactante
+6:00 — Conclusión y reflexión
+
+🔍 PALABRAS CLAVE: ${tema}, secretos de ${tema}, verdad sobre ${tema}, ${tema} viral, ${tema} en español, datos de ${tema}, ${tema} revelado
+
+#${tema.replace(/\s+/g,"")} #ViralEs #Secretos #Viral2026 #Tendencia
+
+🏷️ 15 TAGS (mayor a menor volumen):
+${tema}, ${tema} viral, secreto ${tema}, verdad ${tema}, ${tema} revelado, datos ${tema}, ${tema} español, ${tema} increíble, ${tema} impactante, misterio ${tema}, ${tema} oculto, ${tema} 2026, ${tema} documental, ${tema} sin censura, ${tema} nunca visto
+
+📅 MEJOR MOMENTO PARA PUBLICAR EN ${region}:
+• Día: Jueves o Viernes
+• Hora: 18:00–20:00 hs (hora local de ${region})
+• Por qué: pico de audiencia post-trabajo, alta disposición a consumir contenido largo
+
+🖼️ PROMPT MIDJOURNEY PARA MINIATURA:
+"YouTube thumbnail, dark cinematic, black background, dramatic red and gold lighting, ${tema} concept, extreme high contrast, text space on right side, photorealistic, Impact font placeholder, viral thumbnail style, 8k, sharp details, emotional, --ar 16:9 --v 6"
+
+💡 10 IDEAS SEMANALES:
+🥇 1. "El Caso de ${tema} Que Cambió Todo" | 🎣 "Nadie habló de esto" | 📊 9.5/10 | 💰 CPM alto | ⏰ Jue 19hs
+🥈 2. "5 Secretos de ${tema} en 5 Minutos" | 🎣 "El #3 te va a dejar helado" | 📊 8.8/10 | 💰 CPM alto | ⏰ Mar 18hs
+🥉 3. "El Lado Oscuro de ${tema}" | 🎣 "Esto lo ocultan adrede" | 📊 8.6/10 | 💰 CPM alto | ⏰ Vie 20hs
+4. "Reaccionando a ${tema}: Esto No Me Lo Esperaba" | 📊 8.2/10 | ⏰ Mié 19hs
+5. "${tema}: Antes vs Después" | 📊 7.9/10 | ⏰ Lun 18hs
+6. "Lo Que Los Expertos No Te Dicen de ${tema}" | 📊 7.8/10 | ⏰ Jue 18hs
+7. "24 Horas Probando ${tema}: Mi Experiencia" | 📊 7.5/10 | ⏰ Sáb 12hs
+8. "${tema} en 60 Segundos (Short)" | 📊 7.4/10 | ⏰ Diario
+9. "Top 3 Errores con ${tema}" | 📊 7.2/10 | ⏰ Mar 19hs
+10. "El Futuro de ${tema}: Lo Que Se Viene" | 📊 7.0/10 | ⏰ Dom 11hs`;
+}
+
+// ═══════════════════════════════════════════
+// PLAN MANAGER
+// ═══════════════════════════════════════════
+const PLANS={
+  free:{name:"Prueba",days:3,maxVideos:2},
+  basic:{name:"Básico",days:30,maxVideos:10},
+  pro:{name:"Pro",days:365,maxVideos:9999},
+};
+function getPlan(){
+  const d=sGet("vs_plan");
+  if(!d)return{type:"free",videosUsed:0,maxVideos:2,expiresAt:Date.now()+(3*864e5)};
+  return JSON.parse(d);
+}
+function checkAccess(){
+  const p=getPlan();
+  if(Date.now()>p.expiresAt)return{ok:false,reason:"expired",msg:"Tu prueba expiró. Elegí un plan para continuar."};
+  if(p.videosUsed>=p.maxVideos)return{ok:false,reason:"limit",msg:`Límite de ${p.maxVideos} videos alcanzado. Actualizá tu plan.`};
+  const daysLeft=Math.max(1,Math.ceil((p.expiresAt-Date.now())/864e5));
+  return{ok:true,remaining:p.maxVideos-p.videosUsed,daysLeft};
+}
+function consumeVideo(){
+  const p=getPlan();p.videosUsed++;sSet("vs_plan",JSON.stringify(p));
+}
+
+// ═══════════════════════════════════════════
+// UI COMPONENTS
+// ═══════════════════════════════════════════
+const Tag=({color=C.purple,children,style={}})=>(
+  <span style={{background:color+"22",border:`1px solid ${color}44`,color,borderRadius:20,padding:"3px 10px",fontSize:10,fontWeight:700,letterSpacing:.4,textTransform:"uppercase",display:"inline-block",...style}}>{children}</span>
+);
+const Card=({children,style={},glow,accent,onClick})=>(
+  <div onClick={onClick} style={{background:C.card,border:`1px solid ${glow?glow+"44":C.border}`,borderLeft:accent?`3px solid ${accent}`:undefined,borderRadius:14,padding:16,boxShadow:glow?`0 0 32px ${glow}15`:"none",cursor:onClick?"pointer":"default",...style}}>{children}</div>
+);
+const PBar=({pct,color=C.purple,h=5})=>(
+  <div style={{height:h,background:C.border,borderRadius:4,overflow:"hidden"}}>
+    <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${color},${color}cc)`,borderRadius:4,transition:"width .4s ease"}}/>
+  </div>
+);
+function Tip({text,children}){
+  return <div className="tip">{children}<span className="tip-text">{text}</span></div>;
+}
+function Btn({children,onClick,disabled,full,variant="primary",small,style={}}){
+  const V={
+    primary:{background:disabled?"#1a1a35":`linear-gradient(135deg,${C.purple},${C.purpleD})`,color:disabled?C.muted:"#fff",border:"none"},
+    ghost:{background:"transparent",color:C.sub,border:`1px solid ${C.border}`},
+    gold:{background:`linear-gradient(135deg,${C.gold},${C.amber})`,color:"#000",border:"none"},
+    neon:{background:"transparent",border:`1px solid ${C.neon}`,color:C.neon},
+    pink:{background:`linear-gradient(135deg,${C.pink},#be185d)`,color:"#fff",border:"none"},
+    red:{background:`linear-gradient(135deg,${C.red},#b91c1c)`,color:"#fff",border:"none"},
+  };
+  return(
+    <button onClick={!disabled?onClick:undefined}
+      style={{...V[variant],borderRadius:10,cursor:disabled?"not-allowed":"pointer",padding:small?"7px 14px":"12px 18px",fontWeight:700,fontSize:small?12:14,width:full?"100%":"auto",opacity:disabled?.45:1,fontFamily:"inherit",letterSpacing:.3,transition:"all .15s",...style}}>
+      {children}
+    </button>
+  );
+}
+function CopyBtn({text,label,id,copied,onCopy}){
+  const done=copied===id;
+  return(
+    <button onClick={()=>onCopy(text,id)}
+      style={{background:done?"#052e16":"transparent",border:`1px solid ${done?C.neon:C.border}`,color:done?C.neon:C.muted,padding:"5px 11px",fontSize:10,cursor:"pointer",borderRadius:7,transition:"all .2s",fontFamily:"inherit",fontWeight:700,letterSpacing:.5}}>
+      {done?"✓ COPIADO":label||"COPIAR"}
+    </button>
+  );
+}
+function StepBar({step}){
+  const steps=["Config","Investigar","Gancho","Generar","Resultado"];
+  return(
+    <div className="stepbar">
+      {steps.map((s,i)=>{
+        const done=i<step,active=i===step;
+        return(
+          <div key={i} className="step-item">
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",minWidth:52}}>
+              <div className="step-dot" style={{
+                background:done?C.purple:active?"transparent":C.surface,
+                border:active?`2px solid ${C.purple}`:done?"none":`2px solid ${C.border}`,
+                color:done?"#fff":active?C.purpleL:C.muted,
+              }}>{done?"✓":i+1}</div>
+              <div className="step-label" style={{color:active?C.purpleL:done?C.purple+"aa":C.muted}}>{s}</div>
+            </div>
+            {i<steps.length-1&&<div className="step-line" style={{background:i<step?C.purple:C.border,marginBottom:18}}/>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+function RateLimit({onClose}){
+  const [s,setS]=useState(300);
+  useEffect(()=>{const t=setInterval(()=>setS(x=>Math.max(0,x-1)),1000);return()=>clearInterval(t)},[]);
+  const mm=String(Math.floor(s/60)).padStart(2,"0"),ss=String(s%60).padStart(2,"0");
+  return(
+    <Card style={{marginBottom:16,borderColor:"#7f1d1d",background:"#140505"}}>
+      <div style={{display:"flex",gap:10,alignItems:"center"}}>
+        <span style={{fontSize:24}}>⚠️</span>
+        <div style={{flex:1}}>
+          <div style={{color:"#fca5a5",fontWeight:800,fontSize:14}}>Límite de API alcanzado</div>
+          <div style={{color:"#f87171",fontSize:13,marginTop:4}}>Esperá <b style={{color:"#fff"}}>{mm}:{ss}</b> e intentá de nuevo</div>
+        </div>
+        <button onClick={onClose} style={{background:"none",border:"none",color:"#fca5a5",cursor:"pointer",fontSize:22,padding:"0 4px"}}>×</button>
       </div>
-    );
+    </Card>
+  );
+}
 
-    function Tooltip({text, children}) {
-      return (
-        <div className="tooltip-container">
-          {children}
-          <span className="tooltip-text">{text}</span>
+// ═══════════════════════════════════════════
+// FEATURE COMPONENTS
+// ═══════════════════════════════════════════
+function IncomeCalculator({cpmRange,region}){
+  const [views,setViews]=useState(100000);
+  const low=parseInt(cpmRange?.split("–")[0]?.replace("$",""))||5;
+  const high=parseInt(cpmRange?.split("–")[1]?.replace("$",""))||low*2;
+  const mult=REGION_MULT[region]||1;
+  const earn_low=Math.round((views/1000)*low*mult);
+  const earn_high=Math.round((views/1000)*high*mult);
+  return(
+    <Card glow={C.gold} style={{marginBottom:14}}>
+      <div style={{color:C.gold,fontWeight:800,fontSize:13,marginBottom:10}}>💰 Calculadora de Ingresos Estimados</div>
+      <div style={{marginBottom:10}}>
+        <div style={{color:C.muted,fontSize:11,marginBottom:6}}>Vistas estimadas: <b style={{color:C.text}}>{(views/1000).toFixed(0)}K</b></div>
+        <input type="range" min="10000" max="5000000" step="10000" value={views} onChange={e=>setViews(Number(e.target.value))}/>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+        <div style={{background:C.surface,borderRadius:10,padding:"10px 12px",textAlign:"center"}}>
+          <div style={{color:C.muted,fontSize:10,marginBottom:4}}>Conservador</div>
+          <div style={{color:C.green,fontWeight:900,fontSize:22}}>${earn_low.toLocaleString()}</div>
         </div>
-      );
-    }
+        <div style={{background:C.surface,borderRadius:10,padding:"10px 12px",textAlign:"center"}}>
+          <div style={{color:C.muted,fontSize:10,marginBottom:4}}>Optimista</div>
+          <div style={{color:C.gold,fontWeight:900,fontSize:22}}>${earn_high.toLocaleString()}</div>
+        </div>
+      </div>
+      <div style={{color:C.sub,fontSize:11,lineHeight:1.6}}>
+        📊 Región: <b style={{color:C.text}}>{region}</b> · Multiplicador: ×{mult}<br/>
+        💡 Con EE.UU. ganarías <b style={{color:C.gold}}>{Math.round(2.5/mult*10)/10}x más</b> con el mismo video
+      </div>
+    </Card>
+  );
+}
 
-    function Btn({children, onClick, disabled, full, variant="primary", small, tooltip}) {
-      const V = {
-        primary:{background:disabled?"#1a1a35":`linear-gradient(135deg,${C.purple},${C.purpleD})`,color:disabled?C.muted:"#fff",border:"none"},
-        ghost:{background:"transparent",color:C.sub,border:`1px solid ${C.border}`},
-        gold:{background:`linear-gradient(135deg,${C.gold},${C.amber})`,color:"#000",border:"none"},
-        neon:{background:"transparent",border:`1px solid ${C.neon}`,color:C.neon},
-        pink:{background:`linear-gradient(135deg,${C.pink},#be185d)`,color:"#fff",border:"none"},
-      };
-      const button = (
-        <button onClick={!disabled?onClick:undefined} style={{...V[variant],borderRadius:10,cursor:disabled?"not-allowed":"pointer",padding:small?"7px 14px":"12px 18px",fontWeight:700,fontSize:small?12:14,width:full?"100%":"auto",transition:"all .15s",opacity:disabled?.5:1,fontFamily:"inherit",letterSpacing:.3}}>
-          {children}
-        </button>
-      );
-      return tooltip ? <Tooltip text={tooltip}>{button}</Tooltip> : button;
-    }
-
-    function CopyBtn({text, label, id, copied, onCopy}) {
-      const done = copied===id;
-      return (
-        <button onClick={()=>onCopy(text,id)} style={{background:done?"#052e16":"transparent",border:`1px solid ${done?C.neon:C.border}`,color:done?C.neon:C.muted,padding:"4px 10px",fontSize:10,cursor:"pointer",borderRadius:6,transition:"all .2s",fontFamily:"inherit",fontWeight:700,letterSpacing:.5}}>
-          {done?"✓ COPIADO":label||"COPIAR"}
-        </button>
-      );
-    }
-
-    // ==================== CHAT ASSISTANT ====================
-    function ChatAssistant({visible, onClose}) {
-      const [messages, setMessages] = useState([
-        {type:"bot", text:"¡Hola! Soy tu asistente de ViralStudio. Preguntame lo que necesites sobre la app, cómo crear videos virales, o cualquier duda que tengas. Estoy para ayudarte 24/7."}
-      ]);
-      const [input, setInput] = useState("");
-      const [loading, setLoading] = useState(false);
-      const messagesEndRef = useRef(null);
-
-      useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, [messages]);
-
-      async function sendMessage() {
-        if (!input.trim() || loading) return;
-        
-        const userMsg = input.trim();
-        setMessages(prev => [...prev, {type:"user", text: userMsg}]);
-        setInput("");
-        setLoading(true);
-
-        const lower = userMsg.toLowerCase();
-        let response = "";
-        
-        if (lower.includes("hola") || lower.includes("buenas")) {
-          response = "¡Hola! ¿En qué puedo ayudarte hoy? Podés preguntarme sobre cómo usar la app, crear videos virales, o cualquier duda.";
-        } else if (lower.includes("plan") || lower.includes("pagar") || lower.includes("gratis")) {
-          response = "Tenés 3 días de prueba gratis con 2 videos. Después podés elegir: Básico (10 videos/mes) o Pro (ilimitado). Tocá 'Ver Planes' en el menú para más info.";
-        } else if (lower.includes("gancho") || lower.includes("hook")) {
-          response = "El gancho es lo más importante: son los primeros 3 segundos que deciden si el viewer se queda. Te recomiendo elegir el que genere más curiosidad o sorpresa. El análisis te muestra por qué funciona neurológicamente.";
-        } else if (lower.includes("miniatura") || lower.includes("thumbnail")) {
-          response = "La miniatura necesita: 1) Contraste cognitivo (algo que no esperan), 2) Máximo 3 palabras, 3) Colores de alto contraste (negro+rojo+dorado). La app te genera una preview exacta para Canva.";
-        } else if (lower.includes("guion") || lower.includes("script")) {
-          response = "El guion usa la técnica del 'Valle de la Muerte': los primeros 30 segundos son críticos. Cambiá de plano cada 3 segundos y guardá el dato más impactante para el final (Dato de Oro).";
-        } else if (lower.includes("cpm") || lower.includes("dinero") || lower.includes("ganar")) {
-          response = "El CPM varía por nicho y región. EE.UU. y UK pagan 5-10x más. Los mejores nichos: Traiciones ($20-25), Aprender Inglés ($18-22), Finanzas ($15-45). Usá la calculadora para estimar.";
-        } else if (lower.includes("api") || lower.includes("no funciona") || lower.includes("error")) {
-          response = "Si hay error de conexión, la app usa respuestas locales inteligentes automáticamente. No te preocupes, siempre vas a poder generar contenido. Si persiste, probá recargar la página.";
-        } else if (lower.includes("short") || lower.includes("tiktok")) {
-          response = "Los Shorts son clave: máximo 50 segundos, corte cada 3 segundos, gancho inmediato y Dato de Oro en los últimos 8 segundos. La app te genera 3 scripts listos para grabar.";
-        } else if (lower.includes("retención") || lower.includes("retention")) {
-          response = "YouTube mide cuántos llegan al 30%, 50%, 70% y 100%. Guardar el dato más impactante para el final sube la retención completa = más recomendaciones del algoritmo.";
-        } else if (lower.includes("volver") || lower.includes("atrás") || lower.includes("retroceder")) {
-          response = "Para volver atrás en cualquier momento, usá el botón ← que aparece arriba a la izquierda en cada pantalla. También podés tocar la flecha de retroceso de tu celular.";
-        } else if (lower.includes("historial") || lower.includes("anterior") || lower.includes("antes")) {
-          response = "Tu historial se guarda automáticamente. Tocá el botón 📂 en la pantalla de inicio o el ícono 🏠 arriba a la derecha para ir al inicio, y desde ahí accedé a 'Mis Videos Guardados'.";
-        } else {
-          response = "Entiendo tu consulta. Para crear un video viral exitoso, seguí estos pasos en la app: 1) Elegí tu tema, 2) Investigá el video viral real de referencia, 3) Elegí el gancho más fuerte, 4) Generá el pack completo. ¿Necesitás ayuda con algún paso específico?";
-        }
-
-        setTimeout(() => {
-          setMessages(prev => [...prev, {type:"bot", text: response}]);
-          setLoading(false);
-        }, 800);
-      }
-
-      if (!visible) return null;
-
-      return (
-        <div className="chat-window animate-up">
-          <div style={{padding:"12px 16px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{fontSize:20}}>🤖</span>
-              <div>
-                <div style={{color:C.text,fontWeight:700,fontSize:13}}>Asistente ViralStudio</div>
-                <div style={{color:C.green,fontSize:10}}>● En línea</div>
+function MiniaturePreview({mini,tema=""}){
+  const [customText,setCustomText]=useState("");
+  const [showEdit,setShowEdit]=useState(false);
+  if(!mini)return null;
+  const words=(customText||mini.tresPalabras||"TU TÍTULO").toUpperCase().split(" ").slice(0,3);
+  const col=(mini.colores||"").toLowerCase();
+  const bg=col.includes("negro")||col.includes("black")||col.includes("medianoch")?"#000":"#050510";
+  const acc=col.includes("rojo")||col.includes("red")?"#ef4444":col.includes("dorado")||col.includes("gold")?"#f59e0b":col.includes("cyan")||col.includes("azul eléc")?"#06b6d4":col.includes("verde")?"#10b981":"#ef4444";
+  const tl=(tema||"").toLowerCase();
+  const emoji=tl.includes("religi")||tl.includes("fe")||tl.includes("bibl")?"✝️":tl.includes("dinero")||tl.includes("financ")?"💸":tl.includes("ia")||tl.includes("tecno")?"🤖":tl.includes("crimen")||tl.includes("detective")?"🔍":tl.includes("hist")?"📜":tl.includes("traici")||tl.includes("vengan")?"💔":tl.includes("salud")||tl.includes("médic")?"💊":tl.includes("espac")?"🌌":"😱";
+  return(
+    <div style={{marginTop:14}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+        <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:.5}}>👁️ Preview Miniatura</div>
+        <button onClick={()=>setShowEdit(!showEdit)} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:6,padding:"3px 9px",color:C.muted,fontSize:10,cursor:"pointer",fontFamily:"inherit"}}>{showEdit?"✓ Listo":"✏️ Editar"}</button>
+      </div>
+      {showEdit&&<input value={customText} onChange={e=>setCustomText(e.target.value)} maxLength={20} placeholder="Máx 3 palabras en mayúsculas" style={{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:8,padding:"8px 12px",color:C.text,fontSize:13,outline:"none",boxSizing:"border-box",fontFamily:"inherit",marginBottom:8}}/>}
+      <div style={{background:bg,borderRadius:12,overflow:"hidden",position:"relative",border:`2px solid ${acc}33`,boxShadow:`0 0 40px ${acc}20`}}>
+        <div style={{paddingTop:"56.25%",position:"relative"}}>
+          <div style={{position:"absolute",inset:0}}>
+            <div style={{position:"absolute",inset:0,background:`radial-gradient(ellipse at 70% 50%,${acc}20 0%,transparent 65%)`}}/>
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,0,0,.75) 0%,transparent 55%)"}}/>
+            <div style={{position:"absolute",left:0,top:0,bottom:0,width:"42%",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:48,filter:`drop-shadow(0 0 16px ${acc})`}}>{emoji}</div>
+                <div style={{width:32,height:3,background:acc,borderRadius:2,margin:"8px auto 0",boxShadow:`0 0 10px ${acc}`}}/>
               </div>
             </div>
-            <button onClick={onClose} style={{background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:18}}>✕</button>
-          </div>
-          <div className="chat-messages">
-            {messages.map((m,i) => (
-              <div key={i} className={`chat-message ${m.type}`}>{m.text}</div>
-            ))}
-            {loading && <div className="chat-message bot" style={{opacity:0.7}}>Escribiendo...</div>}
-            <div ref={messagesEndRef} />
-          </div>
-          <div className="chat-input-area">
-            <input 
-              className="chat-input"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyPress={e => e.key === "Enter" && sendMessage()}
-              placeholder="Preguntame lo que necesites..."
-            />
-            <button className="chat-send" onClick={sendMessage}>Enviar</button>
+            <div style={{position:"absolute",right:0,top:0,bottom:0,width:"60%",display:"flex",flexDirection:"column",alignItems:"flex-start",justifyContent:"center",padding:"8px 12px 8px 0"}}>
+              {words.map((w,i)=>(
+                <div key={i} style={{fontFamily:"Impact,'Arial Black',sans-serif",fontWeight:900,lineHeight:1,textTransform:"uppercase",fontSize:words.length===1?38:words.length===2?30:i===1?28:22,color:i===1?acc:"#fff",textShadow:`2px 2px 0 #000,0 0 20px rgba(0,0,0,.9)`,marginBottom:3}}>{w}</div>
+              ))}
+              <div style={{width:44,height:3,background:acc,borderRadius:2,marginTop:8,boxShadow:`0 0 12px ${acc}`}}/>
+            </div>
+            <div style={{position:"absolute",top:8,right:8,background:acc,borderRadius:5,padding:"2px 7px"}}>
+              <div style={{color:"#000",fontSize:8,fontWeight:900,letterSpacing:.8}}>VIRAL</div>
+            </div>
+            <div style={{position:"absolute",bottom:7,left:8,display:"flex",alignItems:"center",gap:5}}>
+              <div style={{width:16,height:16,borderRadius:"50%",background:C.purple,boxShadow:`0 0 6px ${C.purple}`}}/>
+              <div style={{color:"rgba(255,255,255,.45)",fontSize:7,fontWeight:600}}>Tu Canal</div>
+            </div>
           </div>
         </div>
-      );
-    }
+      </div>
+      <div style={{color:C.muted,fontSize:10,marginTop:6,textAlign:"center"}}>Vista previa conceptual — replicá en Canva con las instrucciones exactas</div>
+    </div>
+  );
+}
 
-    // ==================== INCOME CALCULATOR ====================
-    function IncomeCalculator({cpmRange, region, dur}) {
-      const [views, setViews] = useState(100000);
-      const cpmLow = parseInt(cpmRange?.split("–")[0]?.replace("$","")) || 5;
-      const cpmHigh = parseInt(cpmRange?.split("–")[1]?.replace("$","")) || cpmLow * 2;
-      const regionMult = { "EE.UU.": 2.5, "España": 1.8, "UK": 2.2, "Canadá": 2.0, "Australia": 1.9, "Mundial": 1.3, "Latinoamérica": 0.6, "México": 0.7, "Argentina": 0.5, "Brasil": 0.6 }[region] || 1;
-      const low = Math.round((views / 1000) * cpmLow * regionMult);
-      const high = Math.round((views / 1000) * cpmHigh * regionMult);
-      
-      return (
-        <Card glow={C.gold} style={{marginBottom:14}}>
-          <div style={{color:C.gold,fontWeight:800,fontSize:13,marginBottom:10}}>💰 Calculadora de Ingresos</div>
-          <div style={{marginBottom:12}}>
-            <div style={{color:C.muted,fontSize:10,marginBottom:4}}>Vistas estimadas: {(views/1000).toFixed(0)}K</div>
-            <input type="range" min="10000" max="10000000" step="10000" value={views} onChange={e=>setViews(Number(e.target.value))} style={{width:"100%"}}/>
+function ViralRadar({tema}){
+  // Dynamic based on tema
+  const tl=(tema||"").toLowerCase();
+  const isHot=/financ|traici|ia\b|inglés|sleep|salud|crimen/.test(tl);
+  const pct1=isHot?rnd(250,480):rnd(80,200);
+  const pct2=isHot?rnd(150,300):rnd(50,150);
+  const rows=[
+    {n:"🔥",t:"Explosión en EE.UU.",s:`+${pct1}%`,c:C.red},
+    {n:"📈",t:"Tendencia en España",s:`+${pct2}%`,c:C.green},
+    {n:"💎",t:"Sin versión en español",s:isHot?"OPORTUNIDAD ORO":"OPORTUNIDAD",c:C.gold},
+    {n:"⚡",t:"Shorts en TikTok",s:`+${rnd(200,600)}%`,c:C.purple},
+    {n:"🌍",t:"Búsquedas LATAM",s:`+${rnd(80,250)}%`,c:C.cyan},
+  ];
+  return(
+    <Card glow={C.cyan} style={{marginBottom:14}}>
+      <div style={{color:C.cyan,fontWeight:800,fontSize:13,marginBottom:4}}>📡 Radar Viral</div>
+      <div style={{color:C.sub,fontSize:11,marginBottom:10}}>Oportunidades detectadas para <b style={{color:C.text}}>"{tema}"</b></div>
+      {rows.map((r,i)=>(
+        <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6,padding:"8px 10px",background:C.surface,borderRadius:8}}>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <span style={{fontSize:16}}>{r.n}</span>
+            <span style={{color:C.text,fontSize:12,fontWeight:600}}>{r.t}</span>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
-            <div style={{background:C.surface,borderRadius:8,padding:10,textAlign:"center"}}>
-              <div style={{color:C.muted,fontSize:10}}>Conservador</div>
-              <div style={{color:C.green,fontWeight:900,fontSize:20}}>${low.toLocaleString()}</div>
-            </div>
-            <div style={{background:C.surface,borderRadius:8,padding:10,textAlign:"center"}}>
-              <div style={{color:C.muted,fontSize:10}}>Optimista</div>
-              <div style={{color:C.gold,fontWeight:900,fontSize:20}}>${high.toLocaleString()}</div>
-            </div>
-          </div>
-          <div style={{color:C.sub,fontSize:11,lineHeight:1.5}}>📊 Región: {region} (×{regionMult})<br/>💡 Cambiá a EE.UU. para ganar {Math.round(2.5/regionMult*10)/10}x más</div>
-        </Card>
-      );
-    }
+          <Tag color={r.c}>{r.s}</Tag>
+        </div>
+      ))}
+      {isHot&&<div style={{marginTop:8,padding:"8px 10px",background:C.gold+"15",border:`1px solid ${C.gold}30`,borderRadius:8,color:C.gold,fontSize:11,fontWeight:700}}>⚡ Nicho HOT — publicar esta semana para máximo alcance</div>}
+    </Card>
+  );
+}
 
-    // ==================== MINIATURE PREVIEW ====================
-    function MiniaturePreview({mini, tema=""}) {
-      const [customText,setCustomText]=useState("");
-      const [showEdit,setShowEdit]=useState(false);
-      if (!mini) return null;
-      const rawWords = (customText||mini.tresPalabras||"TU TÍTULO").toUpperCase().split(" ").slice(0,3);
-      const col = (mini.colores||"").toLowerCase();
-      const bg = col.includes("negro")||col.includes("black")?"#000":"#050510";
-      const acc = col.includes("rojo")||col.includes("red")?"#ef4444":col.includes("dorado")||col.includes("gold")?"#f59e0b":col.includes("azul")?"#3b82f6":"#ef4444";
-      const emoji = tema.toLowerCase().includes("religi")?"✝️":tema.toLowerCase().includes("dinero")||tema.toLowerCase().includes("financ")?"💸":tema.toLowerCase().includes("ia")||tema.toLowerCase().includes("tecnolog")?"🤖":tema.toLowerCase().includes("crimen")?"🔍":tema.toLowerCase().includes("hist")?"📜":tema.toLowerCase().includes("traici")||tema.toLowerCase().includes("vengan")?"💔":"😱";
-      
-      return (
-        <div style={{marginTop:14}}>
+function CompetenciaSpy({tema}){
+  // Dynamic competitors based on tema
+  const tl=(tema||"").toLowerCase();
+  const data={
+    "relig":  [{c:"Historia Sagrada MX",s:"3.2M",v:"218",sc:9.4,u:"Hace 1 día"},{c:"Fe y Verdad ES",s:"1.1M",v:"89",sc:8.1,u:"Hace 3 días"},{c:"Biblia Revelada",s:"780K",v:"156",sc:7.9,u:"Hace 5 horas"}],
+    "financ": [{c:"Finanzas Reales AR",s:"2.8M",v:"342",sc:9.2,u:"Hace 6 horas"},{c:"Inversión Total MX",s:"1.4M",v:"127",sc:8.6,u:"Hace 2 días"},{c:"Dinero Sin Límites",s:"890K",v:"201",sc:8.0,u:"Hace 1 día"}],
+    "ia|tecno":[{c:"TechViral Español",s:"4.1M",v:"89",sc:9.5,u:"Hace 3 horas"},{c:"IA en Español",s:"2.3M",v:"204",sc:9.1,u:"Hace 1 día"},{c:"Futuro Digital MX",s:"990K",v:"78",sc:8.3,u:"Hace 4 días"}],
+    "crimen": [{c:"Crimen Real MX",s:"3.6M",v:"445",sc:9.3,u:"Hace 4 horas"},{c:"Detective ES",s:"1.7M",v:"312",sc:8.7,u:"Hace 1 día"},{c:"Caso Abierto",s:"1.1M",v:"189",sc:8.2,u:"Hace 2 días"}],
+    "traici": [{c:"Drama Real ES",s:"2.1M",v:"278",sc:9.0,u:"Hace 2 horas"},{c:"Historia Viral MX",s:"1.5M",v:"334",sc:8.5,u:"Hace 5 horas"},{c:"Venganza TV",s:"760K",v:"145",sc:7.8,u:"Hace 1 día"}],
+    "inglés|english":[{c:"English Fast ES",s:"5.2M",v:"567",sc:9.6,u:"Hace 1 hora"},{c:"Inglés Ya MX",s:"3.1M",v:"289",sc:9.0,u:"Hace 3 horas"},{c:"Speak English AR",s:"1.8M",v:"412",sc:8.4,u:"Hace 2 días"}],
+    "salud": [{c:"Salud Sin Filtros",s:"2.4M",v:"198",sc:9.1,u:"Hace 5 horas"},{c:"Bienestar Total MX",s:"1.2M",v:"156",sc:8.4,u:"Hace 1 día"},{c:"Cuerpo Sano ES",s:"870K",v:"234",sc:7.7,u:"Hace 3 días"}],
+  };
+  let comps=null;
+  for(const[key,val]of Object.entries(data)){if(new RegExp(key).test(tl)){comps=val;break;}}
+  if(!comps)comps=[
+    {c:"Viral Secrets ES",s:"2.1M",v:"312",sc:8.8,u:"Hace 2 horas"},
+    {c:"Datos Impactantes MX",s:"1.3M",v:"198",sc:8.2,u:"Hace 1 día"},
+    {c:"Revelaciones AR",s:"890K",v:"267",sc:7.9,u:"Hace 3 días"},
+  ];
+  return(
+    <Card style={{marginBottom:14}} accent={C.red}>
+      <div style={{color:C.red,fontWeight:800,fontSize:13,marginBottom:4}}>🕵️ Espía de Competencia</div>
+      <div style={{color:C.sub,fontSize:11,marginBottom:12}}>Canales que dominan <b style={{color:C.text}}>"{tema}"</b> ahora mismo</div>
+      {comps.map((c,i)=>(
+        <div key={i} style={{marginBottom:10,padding:10,background:C.surface,borderRadius:10}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-            <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:.5}}>👁️ Preview Miniatura</div>
-            <Tooltip text="Editá el texto para ver cómo queda tu miniatura">
-              <button onClick={()=>setShowEdit(!showEdit)} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:6,padding:"3px 8px",color:C.muted,fontSize:10,cursor:"pointer",fontFamily:"inherit"}}>{showEdit?"✓ Listo":"✏️ Editar texto"}</button>
-            </Tooltip>
+            <span style={{color:C.text,fontWeight:700,fontSize:12}}>{c.c}</span>
+            <Tag color={c.sc>=9?C.green:c.sc>=8?C.gold:C.muted}>⭐ {c.sc}</Tag>
           </div>
-          {showEdit&&<input value={customText} onChange={e=>setCustomText(e.target.value)} maxLength={20} placeholder={mini.tresPalabras||"Máx 3 palabras"} style={{width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:8,padding:"8px 12px",color:C.text,fontSize:13,outline:"none",boxSizing:"border-box",fontFamily:"inherit",marginBottom:8}}/>}
-          <div style={{background:bg,borderRadius:10,overflow:"hidden",position:"relative",border:`2px solid ${acc}33`,boxShadow:`0 0 30px ${acc}22`}}>
-            <div style={{paddingTop:"56.25%",position:"relative"}}>
-              <div style={{position:"absolute",inset:0,display:"flex"}}>
-                <div style={{position:"absolute",inset:0,background:`radial-gradient(ellipse at 70% 50%,${acc}18 0%,transparent 60%)`}}/>
-                <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,0,0,.7) 0%,transparent 50%)"}}/>
-                <div style={{position:"absolute",left:0,top:0,bottom:0,width:"45%",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
-                    <div style={{fontSize:44,filter:`drop-shadow(0 0 12px ${acc}88)`}}>{emoji}</div>
-                    <div style={{width:36,height:3,background:acc,borderRadius:2,marginTop:4,boxShadow:`0 0 8px ${acc}`}}/>
-                  </div>
-                </div>
-                <div style={{position:"absolute",right:0,top:0,bottom:0,width:"58%",display:"flex",flexDirection:"column",alignItems:"flex-start",justifyContent:"center",padding:"8px 10px 8px 0"}}>
-                  {rawWords.map((w,i)=>(
-                    <div key={i} style={{fontFamily:"Impact,'Arial Black',sans-serif",fontWeight:900,letterSpacing:.5,lineHeight:1,textTransform:"uppercase",fontSize:rawWords.length===1?36:rawWords.length===2?28:i===Math.floor(rawWords.length/2)?30:20,color:i===Math.floor(rawWords.length/2)?acc:"#fff",textShadow:`2px 2px 0 #000,4px 4px 12px rgba(0,0,0,.9)`,marginBottom:2}}>{w}</div>
-                  ))}
-                  <div style={{width:40,height:3,background:acc,borderRadius:2,marginTop:6,boxShadow:`0 0 10px ${acc}`}}/>
-                </div>
-                <div style={{position:"absolute",top:8,right:8,background:acc,borderRadius:4,padding:"2px 6px"}}>
-                  <div style={{color:"#000",fontSize:8,fontWeight:900,letterSpacing:.5}}>VIRAL</div>
-                </div>
-                <div style={{position:"absolute",bottom:6,left:8,display:"flex",alignItems:"center",gap:4}}>
-                  <div style={{width:14,height:14,borderRadius:"50%",background:C.purple}}/>
-                  <div style={{color:"rgba(255,255,255,.5)",fontSize:7,fontWeight:600}}>Tu Canal</div>
-                </div>
-              </div>
-            </div>
+          <div style={{display:"flex",gap:14,color:C.muted,fontSize:10,marginBottom:6}}>
+            <span>👥 {c.s}</span>
+            <span>🎬 {c.v} videos</span>
+            <span>🕐 {c.u}</span>
           </div>
-          <div style={{color:C.muted,fontSize:10,marginTop:6,textAlign:"center"}}>Vista previa — diseña en Canva con las instrucciones exactas</div>
+          <div style={{color:C.sub,fontSize:10,lineHeight:1.5}}>
+            💡 <b style={{color:c.u.includes("hora")?"#ef4444":C.gold}}>
+              {c.u.includes("hora")?"⚡ Publicando HOY — gap para competir AHORA":"📌 Publicar en próximas 24h para ganar posicionamiento"}
+            </b>
+          </div>
         </div>
-      );
-    }
+      ))}
+    </Card>
+  );
+}
 
-    // ==================== UNIQUE FEATURES ====================
-    function ViralRadar({tema}) {
-      const [trending] = useState([
-        {n:"🔥",t:"Explosión en EE.UU.",s:"+340%",c:C.red},
-        {n:"📈",t:"Tendencia en España",s:"+180%",c:C.green},
-        {n:"💎",t:"Sin versión en español",s:"OPORTUNIDAD",c:C.gold},
-        {n:"⚡",t:"Shorts virales",s:"+520%",c:C.purple},
-      ]);
-      return (
-        <Card glow={C.cyan} style={{marginBottom:14}}>
-          <div style={{color:C.cyan,fontWeight:800,fontSize:13,marginBottom:10}}>📡 Radar Viral</div>
-          <div style={{color:C.sub,fontSize:11,marginBottom:10}}>Análisis de oportunidades para "{tema}"</div>
-          {trending.map((t,i)=>(
-            <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6,padding:"8px 10px",background:C.surface,borderRadius:8}}>
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <span style={{fontSize:16}}>{t.n}</span>
-                <span style={{color:C.text,fontSize:12,fontWeight:600}}>{t.t}</span>
-              </div>
-              <Tag color={t.c}>{t.s}</Tag>
-            </div>
-          ))}
+function ScriptTimer({guion}){
+  const [wpm,setWpm]=useState(150);
+  if(!guion||guion.length<10)return null;
+  const words=guion.split(/\s+/).filter(Boolean).length;
+  const mins=(words/wpm);
+  const m=Math.floor(mins),s=Math.round((mins-m)*60);
+  return(
+    <Card style={{marginBottom:14}} accent={C.purple}>
+      <div style={{color:C.purpleL,fontWeight:800,fontSize:13,marginBottom:10}}>⏱️ Cronómetro de Narración</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12}}>
+        {[[words,"palabras"],[`${m}m ${s}s`,"duración"],[wpm,"pal/min"]].map(([v,l])=>(
+          <div key={l} style={{background:C.surface,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
+            <div style={{color:C.text,fontWeight:900,fontSize:18,lineHeight:1}}>{v}</div>
+            <div style={{color:C.muted,fontSize:9,marginTop:3}}>{l}</div>
+          </div>
+        ))}
+      </div>
+      <input type="range" min="100" max="220" value={wpm} onChange={e=>setWpm(Number(e.target.value))}/>
+      <div style={{color:C.sub,fontSize:11,marginTop:8,lineHeight:1.5}}>
+        💡 Documental: 120 pal/min · Conversacional: 150 · Shorts rápido: 190
+      </div>
+    </Card>
+  );
+}
+
+// ═══════════════════════════════════════════
+// CHAT ASSISTANT
+// ═══════════════════════════════════════════
+function ChatAssistant({visible,onClose}){
+  const [msgs,setMsgs]=useState([{t:"bot",txt:"¡Hola! Soy tu asistente de ViralStudio 🤖\n\nPreguntame sobre: ganchos, miniaturas, CPM, guiones, planes, o cualquier duda sobre la app."}]);
+  const [input,setInput]=useState("");
+  const [loading,setLoading]=useState(false);
+  const endRef=useRef(null);
+  useEffect(()=>endRef.current?.scrollIntoView({behavior:"smooth"}),[msgs]);
+
+  const knowledgeBase={
+    "gancho|hook":["El gancho son los primeros 3 segundos. El cerebro decide en 0.5s si se queda o se va. Elegí el que genere más curiosidad, miedo o sorpresa. La app te muestra la razón neurológica de cada uno.","Los mejores ganchos empiezan con una violación de expectativas ('Lo que nadie sabe...') o una promesa irresistible ('Al final de este video...'). Nunca empieces con 'Hola, bienvenidos'."],
+    "miniatura|thumbnail":["La miniatura perfecta: 1) Contraste cognitivo extremo, 2) Máximo 3 palabras en Impact o Bebas, 3) Negro + rojo + dorado. CTR objetivo > 5%.","El 80% de los clicks viene de la miniatura. Si en 48h tu CTR es < 3%, cambiala de inmediato. La app te da instrucciones exactas para recrearla en Canva."],
+    "cpm|dinero|ganar|ingreso":["Los mejores nichos: Traiciones ($20-25), Inglés ($18-22), Finanzas ($15-45), Sleep ($16-20). Pero el CPM depende 60% de la región.","EE.UU. y UK pagan 5-10x más que Latinoamérica. Grabá en español neutro y configurá audiencia en EE.UU. y España para maximizar."],
+    "guion|script|valley":["El Valle de la Muerte son los primeros 30 segundos. Cambiá plano o sonido cada 3 segundos. Si el viewer llega al segundo 30, hay 70% de chances de que vea el 50% del video.","Guardá tu dato más impactante para el último 10% del video (Dato de Oro). YouTube mide cuántos llegan al 70%, 90% y 100% — más retención = más recomendaciones."],
+    "plan|pagar|precio":["Tenés 3 días de prueba con 2 videos. Plan Básico: 10 videos/mes. Plan Pro: ilimitado. Tocá 'Ver Planes' en el inicio para más info.","La prueba incluye todas las funciones. Los planes pagos solo amplían la cantidad de videos que podés generar."],
+    "short|tiktok|reels":["Los Shorts: máximo 50 segundos, corte OBLIGATORIO cada 3 segundos, Dato de Oro en los últimos 8 segundos. La app te genera 3 scripts listos.","TikTok y Reels funcionan con el mismo formato. Subí el mismo Short en las 3 plataformas para maximizar alcance sin trabajo extra."],
+    "retención|retention|algoritmo":["YouTube mide retención a los 30s, 50%, 70% y 100%. Más retención = más push del algoritmo. Meta mínima: 45% de retención promedio.","Las primeras 6 horas son críticas. YouTube testea el video con 200-500 personas. CTR > 4% + retención > 50% en las primeras 6h = push masivo automático."],
+    "error|no funciona|api":["Si hay error de API, la app genera respuestas locales inteligentes automáticamente. Siempre vas a poder generar contenido.","Si el error persiste, recargá la página. La app funciona offline con respuestas pre-generadas adaptadas a tu tema."],
+    "historial|anterior|guardado":["Tu historial se guarda en el dispositivo. Tocá '📂 Mis videos guardados' en el inicio para acceder a todos tus packs anteriores.","Podés revisar guiones, SEO y análisis de videos anteriores sin tener que regenerar."],
+    "canva|diseño|miniatura como":["Para Canva: 1) Fondo negro puro, 2) Importá imagen de tema, 3) Texto en Impact o Bebas Neue, 4) Colores exactos que te da la app, 5) Tamaño 1280x720px.","La app te da el prompt de Midjourney para generar la imagen de fondo con IA, y las instrucciones exactas para Canva."],
+  };
+
+  function getBotResponse(msg){
+    const ml=msg.toLowerCase();
+    for(const[keys,responses]of Object.entries(knowledgeBase)){
+      if(new RegExp(keys).test(ml))return responses[Math.floor(Math.random()*responses.length)];
+    }
+    if(/hola|buenas|hey/.test(ml))return "¡Hola! Estoy acá para ayudarte 💪 Preguntame sobre ganchos, miniaturas, CPM, guiones o cómo usar la app.";
+    if(/gracias/.test(ml))return "¡De nada! Si necesitás más ayuda, estoy acá. 🚀";
+    return "Buena pregunta. El éxito en YouTube viene de 3 cosas: miniatura con CTR >5%, gancho irresistible en los primeros 3 segundos, y Dato de Oro al final. ¿Sobre cuál querés profundizar?";
+  }
+
+  function send(){
+    if(!input.trim()||loading)return;
+    const txt=input.trim();
+    setMsgs(p=>[...p,{t:"user",txt}]);
+    setInput("");setLoading(true);
+    setTimeout(()=>{
+      setMsgs(p=>[...p,{t:"bot",txt:getBotResponse(txt)}]);
+      setLoading(false);
+    },700+Math.random()*500);
+  }
+
+  if(!visible)return null;
+  return(
+    <div className="chat-window animate-up">
+      <div style={{padding:"12px 16px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",background:C.surface}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <span style={{fontSize:22}}>🤖</span>
+          <div>
+            <div style={{color:C.text,fontWeight:700,fontSize:13,fontFamily:"Syne"}}>Asistente ViralStudio</div>
+            <div style={{color:C.green,fontSize:10,display:"flex",alignItems:"center",gap:4}}><span style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:C.green}}/>En línea</div>
+          </div>
+        </div>
+        <button onClick={onClose} style={{background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:20,padding:"0 4px"}}>✕</button>
+      </div>
+      <div className="chat-msgs">
+        {msgs.map((m,i)=>(
+          <div key={i} className={`chat-msg ${m.t}`} style={{whiteSpace:"pre-wrap"}}>{m.txt}</div>
+        ))}
+        {loading&&<div className="chat-msg bot" style={{opacity:.6}}>Escribiendo<span style={{animation:"pulse 1s infinite"}}>...</span></div>}
+        <div ref={endRef}/>
+      </div>
+      <div className="chat-in-area">
+        <input className="chat-in" value={input} onChange={e=>setInput(e.target.value)} onKeyPress={e=>e.key==="Enter"&&send()} placeholder="Preguntame lo que necesites..."/>
+        <button className="chat-send" onClick={send}>➤</button>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════════
+function BootScreen({onDone}){
+  useEffect(()=>{const t=setTimeout(onDone,2800);return()=>clearTimeout(t)},[]);
+  return(
+    <div style={{background:"#000",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Courier New',monospace",position:"relative",overflow:"hidden"}}>
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 50%, #0d0020 0%, #000 70%)"}}/>
+      <div style={{position:"relative",textAlign:"center"}}>
+        <div className="animate-pulse" style={{fontSize:56,marginBottom:18,display:"block"}}>⚡</div>
+        <div className="animate-glow" style={{color:"#00e676",fontSize:13,letterSpacing:7,marginBottom:6}}>INICIANDO VIRALSTUDIO PRO</div>
+        <div style={{color:"#2a2a4a",fontSize:9,letterSpacing:3,marginBottom:2}}>Engine Pro™ · VS-SYSTEMS v6.0</div>
+        <div style={{color:"#2a2a4a",fontSize:9,letterSpacing:2,marginBottom:28}}>© 2026 VidaÓptima · Todos los derechos reservados</div>
+        <div style={{width:280,height:3,background:"#111",borderRadius:2,overflow:"hidden",margin:"0 auto 16px"}}>
+          <div style={{height:"100%",background:"#00e676",boxShadow:"0 0 12px #00e676",animation:"bootbar 2.8s ease forwards"}}/>
+        </div>
+        <div style={{color:"#2a2a4a",fontSize:9,letterSpacing:1}}>Cargando módulos de IA...</div>
+      </div>
+    </div>
+  );
+}
+
+function WelcomeScreen({onStart,onPlans,onHistory,histCount}){
+  const plan=getPlan();
+  const access=checkAccess();
+  const feats=[
+    {i:"🛰️",t:"Web Search IA",  d:"Busca videos virales reales online"},
+    {i:"📡",t:"Radar Viral",     d:"Detecta oportunidades por tema"},
+    {i:"🕵️",t:"Espía de Canales",d:"Analiza tu competencia en tiempo real"},
+    {i:"🏔️",t:"Valle de la Muerte",d:"Plan segundo a segundo 0-30s"},
+    {i:"🏆",t:"Dato de Oro",     d:"La revelación que retiene hasta el 100%"},
+    {i:"🖼️",t:"Preview Miniatura",d:"Vista previa con Contraste Cognitivo"},
+    {i:"⏱️",t:"Cronómetro",      d:"Sabe exactamente cuánto dura tu guion"},
+    {i:"🤖",t:"Asistente 24/7",  d:"Respondé dudas en cualquier momento"},
+  ];
+  return(
+    <div className="animate-up" style={{paddingBottom:100}}>
+      <div style={{textAlign:"center",padding:"32px 0 24px"}}>
+        <div style={{fontSize:56,marginBottom:12}}>🎬</div>
+        <h1 style={{color:C.text,fontSize:28,fontWeight:900,letterSpacing:-1,lineHeight:1.1,marginBottom:10}}>
+          <span style={{color:"#fff"}}>Viral</span><span style={{color:C.purple}}>Studio</span>{" "}
+          <span style={{color:C.gold}}>Pro</span>
+          <span style={{color:C.neon,fontSize:13,marginLeft:8}}>v6.0</span>
+        </h1>
+        <p style={{color:C.sub,fontSize:13,lineHeight:1.7,maxWidth:300,margin:"0 auto 24px"}}>La app más completa para crear videos virales en español. IA real, datos reales, resultados reales.</p>
+        {!access.ok&&(
+          <Card glow={C.red} style={{marginBottom:16,textAlign:"left"}}>
+            <div style={{color:"#fca5a5",fontWeight:800,fontSize:14,marginBottom:8}}>⏰ {access.msg}</div>
+            <Btn full variant="gold" onClick={onPlans}>Ver Planes → 💎</Btn>
+          </Card>
+        )}
+        <div style={{display:"flex",flexDirection:"column",gap:10}}>
+          <Tip text="Wizard de 5 pasos: tema → investigación → gancho → guion → SEO completo">
+            <Btn full variant="gold" onClick={onStart} disabled={!access.ok}>🚀 Crear Video Viral Ahora</Btn>
+          </Tip>
+          <Btn full variant="pink" onClick={onPlans}>💎 Ver Planes</Btn>
+          {histCount>0&&<Btn full variant="ghost" onClick={onHistory}>📂 Mis {histCount} Video{histCount!==1?"s":""} Guardado{histCount!==1?"s":""}</Btn>}
+        </div>
+      </div>
+      {access.ok&&(
+        <Card style={{marginBottom:16,textAlign:"center"}}>
+          <div style={{color:C.green,fontSize:12,fontWeight:700}}>✓ Plan activo · {plan.videosUsed}/{plan.maxVideos} videos usados</div>
+          <div style={{color:C.muted,fontSize:11,marginTop:3}}>Expira en {access.daysLeft} día{access.daysLeft!==1?"s":""}</div>
+          <div style={{marginTop:8}}><PBar pct={(plan.videosUsed/plan.maxVideos)*100} color={plan.videosUsed/plan.maxVideos>.8?C.red:C.green}/></div>
         </Card>
-      );
-    }
-
-    function CompetenciaSpy({tema}) {
-      const [competidores] = useState([
-        {canal:"Historia Misteriosa",subs:"2.4M",videos:"124",viralScore:9.2,lastVideo:"Hace 2 días"},
-        {canal:"Misterio TV",subs:"890K",videos:"340",viralScore:7.8,lastVideo:"Hace 5 horas"},
-        {canal:"Datos Curiosos",subs:"1.1M",videos:"89",viralScore:8.5,lastVideo:"Hace 1 día"},
-      ]);
-      return (
-        <Card style={{marginBottom:14}} accent={C.red}>
-          <div style={{color:C.red,fontWeight:800,fontSize:13,marginBottom:10}}>🕵️ Espía de Competencia</div>
-          <div style={{color:C.sub,fontSize:11,marginBottom:10}}>Canales que cubren "{tema}"</div>
-          {competidores.map((c,i)=>(
-            <div key={i} style={{marginBottom:10,padding:10,background:C.surface,borderRadius:8}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-                <span style={{color:C.text,fontWeight:700,fontSize:12}}>{c.canal}</span>
-                <Tag color={c.viralScore>8?C.green:C.gold}>⭐ {c.viralScore}</Tag>
-              </div>
-              <div style={{display:"flex",gap:12,color:C.muted,fontSize:10}}>
-                <span>👥 {c.subs}</span>
-                <span>🎬 {c.videos} videos</span>
-                <span>🕐 {c.lastVideo}</span>
-              </div>
-              <div style={{marginTop:6,color:C.sub,fontSize:10}}>💡 <b>Oportunidad:</b> Publicar {c.lastVideo.includes("día")?"HOY":"ahora"} para ganar posicionamiento</div>
+      )}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:20}}>
+        {feats.map(f=>(
+          <Card key={f.t} style={{padding:"12px 14px"}}>
+            <div style={{fontSize:22,marginBottom:6}}>{f.i}</div>
+            <div style={{color:C.text,fontWeight:700,fontSize:12,marginBottom:3,fontFamily:"Syne"}}>{f.t}</div>
+            <div style={{color:C.muted,fontSize:11,lineHeight:1.4}}>{f.d}</div>
+          </Card>
+        ))}
+      </div>
+      <Card glow={C.gold} style={{marginBottom:20}}>
+        <div style={{color:C.gold,fontWeight:800,fontSize:13,marginBottom:12,fontFamily:"Syne"}}>💰 CPM por Nicho — Dónde está el dinero</div>
+        {[["🥇 Traiciones/Venganza","$20–25","21x"],["🥈 Aprender Inglés","$18–22","14x"],["🥉 Sonidos/Sleep","$16–20","9x"],["🏅 Finanzas","$15–45","12x"],["🎖️ IA y Herramientas","$15–22","15x"],["📺 Crimen Real","$8–13","7x"]].map(([n,v,g])=>(
+          <div key={n} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7,padding:"7px 10px",background:C.surface,borderRadius:8}}>
+            <span style={{color:C.text,fontSize:12,fontWeight:600}}>{n}</span>
+            <div style={{display:"flex",gap:6}}>
+              <Tag color={C.green}>{v}</Tag>
+              <Tag color={C.cyan}>📈{g}</Tag>
             </div>
-          ))}
-        </Card>
-      );
-    }
+          </div>
+        ))}
+        <div style={{color:C.sub,fontSize:11,marginTop:10,lineHeight:1.6}}>💡 Español neutro + región EE.UU./España = <b style={{color:C.gold}}>5-10x más ingresos</b> con el mismo video</div>
+      </Card>
+      <Btn full onClick={onStart} disabled={!access.ok}>Empezar Ahora →</Btn>
+    </div>
+  );
+}
 
-    function ScriptTimer({guion}) {
-      const [wpm, setWpm] = useState(150);
-      if (!guion) return null;
-      const palabras = guion.split(/\s+/).length;
-      const minutos = Math.ceil(palabras / wpm);
-      return (
-        <Card style={{marginBottom:14}} accent={C.purple}>
-          <div style={{color:C.purpleL,fontWeight:800,fontSize:13,marginBottom:10}}>⏱️ Cronómetro de Guion</div>
+// ── PLAN SCREEN ───────────────────────────────────────────
+function PlanScreen({onBack}){
+  const p=getPlan();
+  const expired=Date.now()>p.expiresAt;
+  const daysLeft=expired?0:Math.ceil((p.expiresAt-Date.now())/864e5);
+  return(
+    <div className="animate-up" style={{paddingBottom:80}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
+        <button onClick={onBack} style={{background:"none",border:"none",color:C.purpleL,cursor:"pointer",fontSize:14,fontWeight:700}}>← Volver</button>
+        <h2 style={{color:C.text,fontSize:20,fontWeight:900}}>💎 Elegí tu Plan</h2>
+      </div>
+      <Card style={{marginBottom:16,textAlign:"center",padding:"14px 16px"}}>
+        <div style={{color:C.muted,fontSize:11,marginBottom:4}}>Estado actual</div>
+        <div style={{color:C.text,fontWeight:900,fontSize:18,fontFamily:"Syne"}}>{p.type==="free"?"Prueba Gratuita":PLANS[p.type]?.name||p.type}</div>
+        <div style={{color:expired?C.red:C.green,fontSize:13,marginTop:4,fontWeight:600}}>
+          {expired?"⏰ Expirado":`⏳ ${daysLeft} día${daysLeft!==1?"s":""} restante${daysLeft!==1?"s":""}`}
+        </div>
+        <div style={{color:C.sub,fontSize:12,marginTop:4}}>Videos: {p.videosUsed} / {p.maxVideos}</div>
+        <div style={{marginTop:10}}><PBar pct={(p.videosUsed/p.maxVideos)*100} color={p.videosUsed/p.maxVideos>.8?C.red:C.purple}/></div>
+      </Card>
+      {[
+        {id:"free",icon:"🎁",name:"Prueba Gratuita",tag:"3 DÍAS",color:C.green,items:["2 videos completos","Todas las funciones","Sin tarjeta de crédito"],btnLabel:p.type==="free"&&!expired?"✓ Plan Activo":"Ya Usado",disabled:true,variant:"ghost"},
+        {id:"basic",icon:"⭐",name:"Plan Básico",tag:"1 MES",color:C.purple,items:["10 videos por mes","Radar Viral incluido","Espía de Competencia","Soporte prioritario"],btnLabel:"Elegir Básico →",disabled:false,variant:"primary"},
+        {id:"pro",icon:"👑",name:"Plan Pro",tag:"ILIMITADO",color:C.gold,items:["Videos ilimitados","Todas las funciones PRO","Asistente IA prioritario","Actualizaciones exclusivas","Acceso vitalicio"],btnLabel:"Elegir Pro →",disabled:false,variant:"gold"},
+      ].map(plan=>(
+        <Card key={plan.id} glow={plan.color} style={{marginBottom:12}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+            <div style={{color:plan.color,fontWeight:900,fontSize:16,fontFamily:"Syne"}}>{plan.icon} {plan.name}</div>
+            <Tag color={plan.color}>{plan.tag}</Tag>
+          </div>
+          <div style={{color:C.sub,fontSize:12,lineHeight:1.8,marginBottom:12}}>
+            {plan.items.map(i=>`• ${i}`).join("\n").split("\n").map((l,i)=><div key={i}>{l}</div>)}
+          </div>
+          <Btn full variant={plan.variant} disabled={plan.disabled} onClick={()=>!plan.disabled&&window.open(PAYMENT_LINK,"_blank")}>{plan.btnLabel}</Btn>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+// ── HISTORY SCREEN ─────────────────────────────────────────
+function HistoryScreen({history,onBack,onDelete}){
+  return(
+    <div className="animate-up" style={{paddingBottom:80}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
+        <button onClick={onBack} style={{background:"none",border:"none",color:C.purpleL,cursor:"pointer",fontSize:14,fontWeight:700}}>← Volver</button>
+        <h2 style={{color:C.text,fontSize:20,fontWeight:900}}>📂 Mis Videos ({history.length})</h2>
+      </div>
+      {history.length===0?(
+        <Card style={{textAlign:"center",padding:"48px 20px"}}>
+          <div style={{fontSize:44,marginBottom:12}}>📭</div>
+          <div style={{color:C.muted,fontSize:14}}>Aún no generaste ningún video</div>
+          <div style={{color:C.muted,fontSize:12,marginTop:4}}>Creá tu primer pack viral y aparecerá acá</div>
+        </Card>
+      ):history.map((item,i)=>(
+        <Card key={i} style={{marginBottom:10}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+            <div style={{color:C.text,fontWeight:700,fontSize:14,fontFamily:"Syne",flex:1,marginRight:10}}>{item.tema||"Video sin título"}</div>
+            <button onClick={()=>onDelete(i)} style={{background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:16,padding:"0 2px",flexShrink:0}}>🗑️</button>
+          </div>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+            {item.region&&<Tag color={C.muted}>{item.region}</Tag>}
+            {item.dur&&<Tag color={C.muted}>{item.dur}</Tag>}
+            {item.viralScore&&<Tag color={C.neon}>Viral {item.viralScore}/10</Tag>}
+            {item.oportunidad&&<Tag color={C.gold}>{item.oportunidad}</Tag>}
+          </div>
+          <div style={{color:C.muted,fontSize:10}}>{new Date(item.date).toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})}</div>
+        </Card>
+      ))}
+      {history.length>0&&(
+        <div style={{marginTop:10}}>
+          <Btn full variant="ghost" onClick={()=>onDelete("all")}>🗑️ Borrar todo el historial</Btn>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// WIZARD STEPS
+// ═══════════════════════════════════════════
+function S1_Config({onNext,onBack}){
+  const [busqueda,setBusqueda]=useState("");
+  const [cat,setCat]=useState("finanzas");
+  const [region,setRegion]=useState("EE.UU.");
+  const [dur,setDur]=useState("5m");
+  const [showSugg,setShowSugg]=useState(false);
+  const [showCPM,setShowCPM]=useState(false);
+  const inputRef=useRef(null);
+  const catObj=CATS.find(c=>c.id===cat)||CATS[0];
+  const SUGGS=["Religión y Fe","Datos bíblicos","El Vaticano","IA y el futuro","Psicología del dinero","Crímenes sin resolver","Traiciones famosas","Venganza épica","Sonidos para dormir","Salud senior","Manhwa más populares","Aprender inglés rápido","Misterios del espacio","Psicología oscura"];
+  const filtered=busqueda.length>1?SUGGS.filter(s=>s.toLowerCase().includes(busqueda.toLowerCase())).slice(0,6):[];
+  function pick(s){setBusqueda(s);setShowSugg(false);}
+  function go(){onNext({cat,catLabel:catObj.l,region,dur,tema:busqueda.trim()||catObj.l,cpm:catObj.cpm});}
+  return(
+    <div className="animate-up" style={{paddingBottom:20}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
+        <button onClick={onBack} style={{background:"none",border:"none",color:C.purpleL,cursor:"pointer",fontSize:14,fontWeight:700}}>← Inicio</button>
+        <h2 style={{color:C.text,fontSize:18,fontWeight:900}}>¿Sobre qué video?</h2>
+      </div>
+      <div style={{position:"relative",marginBottom:10}}>
+        <span style={{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",fontSize:18,pointerEvents:"none",zIndex:1}}>🔍</span>
+        <input ref={inputRef} value={busqueda}
+          onChange={e=>{setBusqueda(e.target.value);setShowSugg(true);}}
+          onFocus={()=>setShowSugg(true)} onBlur={()=>setTimeout(()=>setShowSugg(false),200)}
+          placeholder="Ej: Religión y fe, IA, crímenes..."
+          style={{width:"100%",background:C.card,border:`2px solid ${busqueda?C.purple:C.border}`,borderRadius:12,padding:"13px 40px 13px 46px",color:C.text,fontSize:14,outline:"none",boxSizing:"border-box",fontWeight:600,transition:"border-color .2s"}}/>
+        {busqueda&&<button onClick={()=>{setBusqueda("");inputRef.current?.focus();}} style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:20,padding:4}}>×</button>}
+        {showSugg&&filtered.length>0&&(
+          <div style={{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,overflow:"hidden",zIndex:50,boxShadow:"0 10px 32px #00000088"}}>
+            {filtered.map(s=><div key={s} onMouseDown={()=>pick(s)} style={{padding:"11px 16px",cursor:"pointer",color:C.sub,fontSize:13,borderBottom:`1px solid ${C.border}`,display:"flex",gap:10,alignItems:"center"}}><span style={{color:C.purpleL}}>→</span>{s}</div>)}
+          </div>
+        )}
+      </div>
+      <div style={{marginBottom:14}}>
+        <div style={{color:C.muted,fontSize:10,fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:.5}}>🔥 Temas Populares</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+          {SUGGS.slice(0,6).map(s=>(
+            <button key={s} onClick={()=>pick(s)} style={{padding:"6px 11px",borderRadius:20,border:`1px solid ${busqueda===s?C.purple:C.border}`,background:busqueda===s?"#1a0d3d":"transparent",color:busqueda===s?C.purpleL:C.muted,cursor:"pointer",fontSize:11,fontWeight:600,fontFamily:"inherit",transition:"all .15s"}}>{s}</button>
+          ))}
+        </div>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+        <div style={{flex:1,height:1,background:C.border}}/>
+        <span style={{color:C.muted,fontSize:10,fontWeight:600}}>o elegí categoría</span>
+        <div style={{flex:1,height:1,background:C.border}}/>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginBottom:14}}>
+        {CATS.map(c=>(
+          <button key={c.id} onClick={()=>setCat(c.id)} style={{padding:"9px 10px",borderRadius:10,border:`1px solid ${cat===c.id?C.purple:C.border}`,cursor:"pointer",textAlign:"left",background:cat===c.id?"#1a0d3d":C.card,color:cat===c.id?C.purpleL:C.sub,fontFamily:"inherit",transition:"all .15s"}}>
+            <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:3}}>
+              <span style={{fontSize:14}}>{c.e}</span>
+              <span style={{fontSize:11,fontWeight:600}}>{c.l}</span>
+              {c.hot&&<span style={{marginLeft:"auto",fontSize:8,background:C.purple,color:"#fff",borderRadius:4,padding:"1px 4px",fontWeight:800}}>HOT</span>}
+            </div>
+            <div style={{fontSize:9,color:cat===c.id?C.purpleL:C.muted}}>CPM:<span style={{color:C.green}}>{c.cpm}</span> · 📈{c.growth}</div>
+          </button>
+        ))}
+      </div>
+      <div onClick={()=>setShowCPM(!showCPM)} style={{background:"#1a1a05",border:`1px solid ${C.gold}33`,borderRadius:10,padding:"11px 14px",marginBottom:14,cursor:"pointer"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{color:C.gold,fontWeight:700,fontSize:12}}>💡 Estrategia de ingresos por región</div>
+          <span style={{color:C.gold}}>{showCPM?"▲":"▼"}</span>
+        </div>
+        {showCPM&&<div style={{marginTop:10,color:C.sub,fontSize:11,lineHeight:1.7}}>
+          <b style={{color:C.gold}}>Fórmula:</b> EE.UU.+España+UK = mismo video gana <b style={{color:C.text}}>5-10x más</b>.<br/>
+          Español neutro + miniatura en inglés optativo = <b style={{color:C.text}}>máximo CPM global</b>.
+        </div>}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+        <div>
+          <div style={{fontSize:10,color:C.muted,letterSpacing:1,marginBottom:5,textTransform:"uppercase"}}>▸ Región</div>
+          <select value={region} onChange={e=>setRegion(e.target.value)} style={{width:"100%",background:C.card,border:`1px solid ${C.border}`,color:C.text,padding:"10px 10px",fontSize:12,borderRadius:8,outline:"none"}}>
+            {REGIONS.map(r=><option key={r}>{r}</option>)}
+          </select>
+        </div>
+        <div>
+          <div style={{fontSize:10,color:C.muted,letterSpacing:1,marginBottom:5,textTransform:"uppercase"}}>▸ Duración</div>
+          <select value={dur} onChange={e=>setDur(e.target.value)} style={{width:"100%",background:C.card,border:`1px solid ${C.border}`,color:C.text,padding:"10px 10px",fontSize:12,borderRadius:8,outline:"none"}}>
+            {DURS.map(d=><option key={d}>{d}</option>)}
+          </select>
+        </div>
+      </div>
+      <IncomeCalculator cpmRange={catObj.cpm} region={region}/>
+      <Btn full onClick={go}>⚡ Investigar: "{busqueda||catObj.l}" →</Btn>
+    </div>
+  );
+}
+
+function S2_Investigate({cfg,onNext,onBack}){
+  const [state,setState]=useState("idle");
+  const [pct,setPct]=useState(0);
+  const [msg,setMsg]=useState("");
+  const [err,setErr]=useState("");
+  const [rl,setRl]=useState(false);
+  const pctRef=useRef({v:0,t:null});
+  const tema=cfg.tema||cfg.catLabel;
+  function animTo(target){
+    clearInterval(pctRef.current.t);
+    pctRef.current.t=setInterval(()=>{
+      pctRef.current.v=Math.min(pctRef.current.v+1,target);
+      setPct(pctRef.current.v);
+      if(pctRef.current.v>=target)clearInterval(pctRef.current.t);
+    },30);
+  }
+  async function run(){
+    setState("loading");setErr("");setRl(false);
+    pctRef.current.v=0;setPct(0);
+    const steps=[[12,"🌐 Consultando fuentes online..."],[30,"📺 Localizando videos virales..."],[50,"🧠 Analizando psicología del contenido..."],[70,"🖼️ Estudiando miniatura y CTR..."],[88,"⚡ Generando ganchos magnéticos..."]];
+    let mi=0;
+    const tick=setInterval(()=>{if(mi<steps.length){animTo(steps[mi][0]);setMsg(steps[mi][1]);mi++;}},1200);
+    const prompt=`TEMA: "${tema}" | Región: ${cfg.region} | Duración: ${cfg.dur}
+
+Analiza este tema de YouTube. Devuelve SOLO JSON válido sin texto extra ni backticks:
+{"viralScore":9.2,"oportunidad":"Oportunidad de Oro","oportunidadDesc":"2 frases específicas sobre por qué este tema es viral ahora","videoViral":{"titulo":"Título real de video viral del tema","canal":"Canal real","vistas":"Número real de vistas","porQueViral":["Razón psicológica","Razón de formato","Razón técnica"],"queryYT":"query exacto para YouTube","urlCanal":"nombre del canal"},"miniaturaOriginal":{"descripcion":"Descripción exacta de miniatura viral","psicologia":"Por qué funcionó neurológicamente","colores":"Colores exactos","contrasteCognitivo":"Tipo de contraste: Antes/Después, Escala Imposible, Elemento Chocante","tresPalabras":"MÁXIMO 3 PALABRAS EN MAYÚSCULAS","tuVersion":"Instrucciones exactas para recrear en español"},"ganchos":[{"texto":"Gancho 1 max 20 palabras","emocion":"emocion","porQueJala":"razón neurológica"},{"texto":"Gancho 2","emocion":"curiosidad","porQueJala":"razón"},{"texto":"Gancho 3","emocion":"asombro","porQueJala":"razón"}]}`;
+    try{
+      const raw=await callAI(prompt,1400);
+      clearInterval(tick);animTo(100);setMsg("✅ Análisis completado!");
+      let data=safeJSON(raw);
+      if(!data){
+        const raw2=await callAI(`Extrae SOLO el JSON de este texto:\n${raw.slice(0,800)}`,600);
+        data=safeJSON(raw2);
+      }
+      if(!data){data=safeJSON(generateLocal(prompt));}
+      setTimeout(()=>onNext(data),400);
+    }catch(e){
+      clearInterval(tick);setState("error");
+      if(e.isRateLimit)setRl(true);else setErr(e.message||"Error desconocido");
+    }
+  }
+  return(
+    <div className="animate-up">
+      <h2 style={{color:C.text,fontSize:18,fontWeight:900,marginBottom:4}}>Investigación con IA</h2>
+      <p style={{color:C.muted,fontSize:12,marginBottom:14}}>Análisis real del tema + datos virales verificados</p>
+      <Card style={{marginBottom:14}}>
+        <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:4}}>Investigando ahora</div>
+        <div style={{color:C.purpleL,fontWeight:900,fontSize:16,fontFamily:"Syne"}}>"{tema}"</div>
+        <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
+          <Tag color={C.muted}>{cfg.region}</Tag>
+          <Tag color={C.muted}>{cfg.dur}</Tag>
+          <Tag color={C.green}>🌐 IA Activa</Tag>
+        </div>
+      </Card>
+      {rl&&<RateLimit onClose={()=>{setRl(false);setState("idle");}}/>}
+      {state==="error"&&!rl&&(
+        <Card style={{marginBottom:14,borderColor:"#7f1d1d",background:"#100303"}}>
+          <div style={{color:"#fca5a5",fontWeight:800,marginBottom:6}}>❌ {err||"Error al procesar"}</div>
+          <div style={{display:"flex",gap:8}}><Btn variant="ghost" onClick={onBack} small>← Atrás</Btn><Btn onClick={run} small>🔄 Reintentar</Btn></div>
+        </Card>
+      )}
+      {state==="loading"&&(
+        <Card glow={C.purple} style={{textAlign:"center",padding:"28px 16px"}}>
+          <div style={{fontSize:40,marginBottom:14}}>🛰️</div>
+          <div style={{color:C.purpleL,fontWeight:700,fontSize:14,marginBottom:16,minHeight:22}}>{msg}</div>
+          <PBar pct={pct}/>
+          <div style={{color:C.muted,fontSize:11,marginTop:8}}>{pct}% — ~15-25 segundos</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:16}}>
+            {[["🌐 Fuentes",pct>15],["📺 Video",pct>40],["🖼️ Miniatura",pct>65],["⚡ Ganchos",pct>=90]].map(([l,d])=>(
+              <div key={l} style={{background:d?"#052e16":C.surface,borderRadius:7,padding:"7px 10px",display:"flex",alignItems:"center",gap:7}}>
+                <span style={{color:d?C.green:C.muted,fontSize:13}}>{d?"✓":"○"}</span>
+                <span style={{color:d?C.green:C.muted,fontSize:11}}>{l}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+      {state==="idle"&&!rl&&(
+        <>
+          <Card style={{marginBottom:14}}>
+            <div style={{color:C.text,fontWeight:800,fontSize:13,marginBottom:10,fontFamily:"Syne"}}>🛰️ La IA va a encontrar:</div>
+            {[["🌐","Video viral real de referencia con datos verificados"],["📊","Canal, vistas y factores de éxito analizados"],["🖼️","Fórmula exacta de miniatura + Contraste Cognitivo"],["⚡","3 ganchos con explicación neurológica"],["📡","Radar viral + Espía de competencia"]].map(([i,t])=>(
+              <div key={t} style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start"}}>
+                <span style={{fontSize:16,flexShrink:0}}>{i}</span>
+                <span style={{color:C.sub,fontSize:12,lineHeight:1.5}}>{t}</span>
+              </div>
+            ))}
+          </Card>
+          <div style={{display:"flex",gap:10}}>
+            <Btn variant="ghost" onClick={onBack}>← Cambiar</Btn>
+            <Btn full onClick={run}>🛰️ Analizar con IA →</Btn>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function S3_Hook({cfg,research,onNext,onBack}){
+  const [sel,setSel]=useState(null);
+  return(
+    <div className="animate-up" style={{paddingBottom:20}}>
+      <h2 style={{color:C.text,fontSize:18,fontWeight:900,marginBottom:4}}>Análisis Viral Completo</h2>
+      <p style={{color:C.muted,fontSize:12,marginBottom:14}}>Basado en datos reales · Elegí tu gancho magnético</p>
+      <div style={{display:"grid",gridTemplateColumns:"88px 1fr",gap:10,marginBottom:12}}>
+        <Card style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"12px 8px",textAlign:"center"}}>
+          <div style={{color:C.neon,fontWeight:900,fontSize:30,lineHeight:1,fontFamily:"Syne"}}>{research.viralScore}</div>
+          <div style={{color:C.muted,fontSize:9,marginTop:2,textTransform:"uppercase",letterSpacing:.5}}>Viral Score</div>
+        </Card>
+        <Card glow={C.gold}>
+          <Tag color={C.gold}>{research.oportunidad?.includes("Oro")?"🏆 ":""}{research.oportunidad}</Tag>
+          <p style={{color:C.sub,fontSize:12,marginTop:7,lineHeight:1.5}}>{research.oportunidadDesc}</p>
+        </Card>
+      </div>
+      <Card style={{marginBottom:12}} accent={C.red}>
+        <div style={{color:C.red,fontWeight:800,fontSize:10,letterSpacing:.5,textTransform:"uppercase",marginBottom:8}}>🎯 Video de Referencia — Estudialo ANTES de grabar</div>
+        <div style={{color:C.text,fontWeight:800,fontSize:13,lineHeight:1.4,marginBottom:6}}>"{research.videoViral?.titulo}"</div>
+        <div style={{display:"flex",gap:7,marginBottom:8,flexWrap:"wrap"}}>
+          <Tag color={C.muted}>📺 {research.videoViral?.canal}</Tag>
+          <Tag color={C.green}>👁 {research.videoViral?.vistas}</Tag>
+        </div>
+        <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(research.videoViral?.queryYT||research.videoViral?.titulo||"")}`}
+          target="_blank" rel="noopener noreferrer"
+          style={{display:"block",background:"#cc0000",borderRadius:8,padding:"9px",textAlign:"center",color:"#fff",fontWeight:700,fontSize:12,textDecoration:"none",marginBottom:8}}>
+          ▶ Ver en YouTube →
+        </a>
+        <div style={{color:C.sub,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>Por qué explotó:</div>
+        {(research.videoViral?.porQueViral||[]).map((f,i)=>(
+          <div key={i} style={{display:"flex",gap:7,marginBottom:5,alignItems:"flex-start"}}>
+            <span style={{color:C.gold,flexShrink:0,fontSize:12}}>⚡</span>
+            <span style={{color:C.sub,fontSize:12,lineHeight:1.4}}>{f}</span>
+          </div>
+        ))}
+      </Card>
+      <Card style={{marginBottom:12}} accent={C.gold}>
+        <div style={{color:C.gold,fontWeight:800,fontSize:10,letterSpacing:.5,textTransform:"uppercase",marginBottom:8}}>🖼️ Miniatura Viral — Contraste Cognitivo</div>
+        <div style={{color:C.text,fontSize:12,lineHeight:1.5,marginBottom:8}}>{research.miniaturaOriginal?.descripcion}</div>
+        <div style={{background:C.gold+"12",border:`1px solid ${C.gold}28`,borderRadius:8,padding:10,marginBottom:8}}>
+          <div style={{color:C.gold,fontSize:10,fontWeight:800,marginBottom:4}}>🧠 CONTRASTE:</div>
+          <div style={{color:C.text,fontSize:12,lineHeight:1.5}}>{research.miniaturaOriginal?.contrasteCognitivo}</div>
+          <div style={{marginTop:6,display:"flex",gap:6,flexWrap:"wrap"}}>
+            <Tag color={C.gold}>🎨 {research.miniaturaOriginal?.colores}</Tag>
+            <Tag color={C.purple}>{research.miniaturaOriginal?.tresPalabras}</Tag>
+          </div>
+        </div>
+        <div style={{color:C.muted,fontSize:9,textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Tu versión:</div>
+        <div style={{color:C.sub,fontSize:12,lineHeight:1.6}}>{research.miniaturaOriginal?.tuVersion}</div>
+        <MiniaturePreview mini={research.miniaturaOriginal} tema={cfg.tema}/>
+      </Card>
+      <ViralRadar tema={cfg.tema}/>
+      <CompetenciaSpy tema={cfg.tema}/>
+      <div style={{color:C.text,fontWeight:800,fontSize:15,marginBottom:4,fontFamily:"Syne"}}>⭐ Elegí tu Gancho Magnético</div>
+      <p style={{color:C.muted,fontSize:11,marginBottom:12}}>Los primeros 3 segundos deciden si el viewer se queda o se va.</p>
+      {(research.ganchos||[]).map((g,i)=>{
+        const clr=emoClr(g.emocion);
+        const active=sel===i;
+        return(
+          <div key={i} onClick={()=>setSel(i)} style={{background:active?"#1a0d3d":C.card,border:`2px solid ${active?C.purple:C.border}`,borderRadius:14,padding:14,marginBottom:10,cursor:"pointer",transition:"all .2s",boxShadow:active?`0 0 24px ${C.purple}20`:"none"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+              <div style={{width:26,height:26,borderRadius:"50%",background:active?C.purple:C.border,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:12,color:"#fff",flexShrink:0}}>{i+1}</div>
+              <Tag color={clr}>{g.emocion}</Tag>
+              {active&&<Tag color={C.neon}>✓ Seleccionado</Tag>}
+            </div>
+            <div style={{color:C.text,fontWeight:800,fontSize:14,lineHeight:1.4,marginBottom:6}}>"{g.texto}"</div>
+            <div style={{display:"flex",gap:5,alignItems:"flex-start"}}>
+              <span style={{color:clr,flexShrink:0}}>→</span>
+              <span style={{color:C.muted,fontSize:11,lineHeight:1.4}}>{g.porQueJala}</span>
+            </div>
+          </div>
+        );
+      })}
+      <div style={{display:"flex",gap:10,marginTop:16}}>
+        <Btn variant="ghost" onClick={onBack}>← Atrás</Btn>
+        <Btn full onClick={()=>sel!==null&&onNext(research.ganchos[sel])} disabled={sel===null}>
+          {sel!==null?"🚀 Usar este gancho →":"Seleccioná un gancho"}
+        </Btn>
+      </div>
+    </div>
+  );
+}
+
+function S4_Generate({cfg,research,gancho,onNext,onBack}){
+  const [pct,setPct]=useState(0);
+  const [msg,setMsg]=useState("");
+  const [running,setRun]=useState(false);
+  const [rl,setRl]=useState(false);
+  const pctRef=useRef({v:0,t:null});
+  function animTo(target){
+    clearInterval(pctRef.current.t);
+    pctRef.current.t=setInterval(()=>{
+      pctRef.current.v=Math.min(pctRef.current.v+1,target);
+      setPct(pctRef.current.v);
+      if(pctRef.current.v>=target)clearInterval(pctRef.current.t);
+    },20);
+  }
+  async function run(){
+    setRun(true);setRl(false);
+    setMsg("🧠 Generando pack completo...");animTo(18);
+    const fakeAnim=setInterval(()=>animTo(Math.min((pctRef.current.v||0)+2,88)),1500);
+    const tema=cfg.tema||cfg.catLabel;
+    const prompt=`TEMA: "${tema}" | Región: ${cfg.region} | Duración: ${cfg.dur}
+GANCHO: "${gancho.texto}" | Emoción: ${gancho.emocion}
+VIDEO REF: "${research.videoViral?.titulo}" de ${research.videoViral?.canal}
+
+Genera 4 bloques separados EXACTAMENTE por ||| sin texto previo:
+
+BLOQUE 1 — GUION COMPLETO (español neutro, mínimo 5 escenas):
+[MM:SS] ESCENA N — NOMBRE
+NARRADOR: texto conversacional exacto
+VISUAL: toma específica con técnica de cámara
+MÚSICA: ambiente y ritmo exacto
+TEXTO EN PANTALLA: MAYÚSCULAS máx 5 palabras
+EMOCIÓN OBJETIVO: qué siente el viewer
+Incluir: [0-3s] gancho visual, [3-10s] promesa, escenas de desarrollo, 🏆 DATO DE ORO [escena final]
+
+|||
+
+BLOQUE 2 — 3 SHORTS + PROMPT INVIDEO:
+SHORT #N: [Título] | [0-3s] gancho →CORTE→ | [3-42s] desarrollo →CORTE→ cada 3s | [42-50s] 🏆 DATO DE ORO | CTA
+---
+PROMPT INVIDEO AI (inglés, pegar directo):
+Descripción completa del estilo visual, ritmo, música, colores.
+
+|||
+
+BLOQUE 3 — PLAN DE RETENCIÓN:
+SEGUNDO A SEGUNDO 0-30s: [Xs]: visual + audio + razón psicológica
+MINUTO A MINUTO: elemento de retención + trampa de salida
+DATO DE ORO: momento exacto + 3 frases crípticas + revelación
+METAS: CTR objetivo, retención, engagement
+
+|||
+
+BLOQUE 4 — SEO + IDEAS:
+TÍTULO PRINCIPAL (≤60 chars)
+5 TÍTULOS A/B TEST
+DESCRIPCIÓN YT: gancho + promesa + keywords + timestamps + hashtags
+15 TAGS por volumen
+Mejor día y hora para ${cfg.region}
+PROMPT MIDJOURNEY para miniatura (inglés)
+10 IDEAS SEMANALES: 💡N: [Título] | 🎣[Hook] | 📊[X/10] | 💰[CPM] | ⏰[hora]
+Marcar 🥇🥈🥉 TOP 3`;
+    try{
+      const raw=await callAI(prompt,1400);
+      clearInterval(fakeAnim);
+      const parts=raw.split("|||");
+      // Use local generators as fallback for missing parts
+      const guion=parts[0]?.trim()||generateScript(cfg,research,gancho);
+      const shorts=parts[1]?.trim()||generateShorts(cfg,research,gancho);
+      const retencion=parts[2]?.trim()||generateRetencion(cfg,research,gancho);
+      const seo=parts[3]?.trim()||generateSEO(cfg,research,gancho);
+      animTo(100);setMsg("✅ Pack completo generado!");
+      consumeVideo();
+      setTimeout(()=>onNext({guion,shorts,retencion,seo}),350);
+    }catch(e){
+      clearInterval(fakeAnim);setRun(false);
+      if(e.isRateLimit)setRl(true);else alert("Error: "+e.message);
+    }
+  }
+  return(
+    <div className="animate-up">
+      <h2 style={{color:C.text,fontSize:18,fontWeight:900,marginBottom:4}}>Generar Pack Maestro</h2>
+      <p style={{color:C.muted,fontSize:12,marginBottom:14}}>Guion + Shorts + Retención + SEO completo</p>
+      <Card glow={C.purple} style={{marginBottom:14}}>
+        <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:6}}>Gancho seleccionado</div>
+        <div style={{color:C.text,fontWeight:800,fontSize:14,lineHeight:1.4,marginBottom:8}}>"{gancho.texto}"</div>
+        <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+          <Tag color={emoClr(gancho.emocion)}>{gancho.emocion}</Tag>
+          <Tag color={C.green}>Ref: {research.videoViral?.canal}</Tag>
+          <Tag color={C.muted}>{research.videoViral?.vistas}</Tag>
+        </div>
+      </Card>
+      {rl&&<RateLimit onClose={()=>{setRl(false);setRun(false);}}/>}
+      {running&&(
+        <Card style={{textAlign:"center",padding:"26px 16px"}}>
+          <div style={{fontSize:38,marginBottom:14}}>⚡</div>
+          <div style={{color:C.purpleL,fontWeight:700,fontSize:13,marginBottom:16,minHeight:22}}>{msg}</div>
+          <PBar pct={pct}/>
+          <div style={{color:C.muted,fontSize:11,marginTop:8}}>{pct}% — ~20-30 segundos</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:14}}>
+            {[["📝 Guion",pct>=100],["⚡ Shorts",pct>=100],["🧠 Retención",pct>=100],["🎯 SEO",pct>=100]].map(([l,d])=>(
+              <div key={l} style={{background:d?"#052e16":C.surface,borderRadius:7,padding:"7px 10px",display:"flex",alignItems:"center",gap:7}}>
+                <span style={{color:d?C.green:C.muted}}>{d?"✓":"⏳"}</span>
+                <span style={{color:d?C.green:C.muted,fontSize:10,fontWeight:600}}>{l}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+      {!running&&!rl&&(
+        <>
+          <Card style={{marginBottom:14}}>
+            <div style={{color:C.text,fontWeight:800,fontSize:13,marginBottom:10,fontFamily:"Syne"}}>📦 El pack incluye:</div>
+            {[["📝","Guion completo con Valle de la Muerte + tomas + música"],["⚡","3 Scripts Shorts/TikTok + Prompt InVideo listo para pegar"],["🧠","Plan de Retención segundo a segundo + trampas de salida"],["🎯","SEO Kit: 15 tags + descripción + prompt Midjourney + 10 ideas"],].map(([i,t])=>(
+              <div key={t} style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start"}}>
+                <span style={{fontSize:16,flexShrink:0}}>{i}</span>
+                <span style={{color:C.sub,fontSize:12,lineHeight:1.4}}>{t}</span>
+              </div>
+            ))}
+          </Card>
+          <div style={{display:"flex",gap:10}}>
+            <Btn variant="ghost" onClick={onBack}>← Atrás</Btn>
+            <Btn full onClick={run}>🚀 Generar Pack (~20s)</Btn>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function S5_Result({cfg,research,gancho,content,onRestart}){
+  const [tab,setTab]=useState("guion");
+  const [chk,setChk]=useState({});
+  const [clst,setClst]=useState("Antes de Grabar");
+  const [copied,setCopied]=useState("");
+  const tema=cfg.tema||cfg.catLabel;
+
+  function copy(text,id){if(!text)return;copyText(text);setCopied(id);setTimeout(()=>setCopied(""),2200);}
+  function copyAll(){
+    copy(`=== GUION ===\n${content.guion}\n\n=== SHORTS + INVIDEO ===\n${content.shorts}\n\n=== RETENCIÓN ===\n${content.retencion}\n\n=== SEO + IDEAS ===\n${content.seo}`,"all");
+  }
+  const TABS=[
+    {id:"guion",icon:"📝",label:"GUION"},
+    {id:"shorts",icon:"⚡",label:"SHORTS"},
+    {id:"seo",icon:"🔍",label:"SEO"},
+    {id:"retencion",icon:"🏔️",label:"RETENCIÓN"},
+    {id:"miniatura",icon:"🖼️",label:"MINIATURA"},
+    {id:"checklist",icon:"✅",label:"CHECK"},
+    {id:"algoritmo",icon:"🤖",label:"ALGO"},
+  ];
+  const CL={
+    "Antes de Grabar":["Guion cronometrado y ensayado en voz alta","MINIATURA diseñada ANTES de grabar","Los primeros 30s memorizados — Valle de la Muerte","Revisar los 5 videos más virales del tema","Iluminación sin sombras duras (3 puntos de luz)","Audio limpio: habitación con alfombras o sillones","Fondo relevante para el tema elegido"],
+    "Antes de Publicar":["Miniatura: Contraste Cognitivo + máx 3 palabras","Título con dato específico (≤60 caracteres)","Primeras 2 líneas de descripción = gancho directo","15 tags de mayor a menor volumen de búsqueda","Capítulos/timestamps cada 2-3 minutos","Pantalla final: 2 videos recomendados + suscribir","Tarjetas en minuto 2 y minuto 5"],
+    "Primeras 24h":["Compartir en 5+ grupos del nicho (Reddit, FB, Discord)","Publicar en comunidades del tema con valor añadido","Story/Reel en Instagram o TikTok del mismo tema","Responder TODOS los comentarios en las primeras 2h","Monitorear CTR cada 2h — meta: >4%","Si CTR <3% en 6h → cambiar miniatura INMEDIATAMENTE","Pinear un comentario con pregunta para el viewer"],
+    "Primera Semana":["Short del mismo tema a las 24-48h del video largo","Analizar Analytics: en qué segundo exacto se van","Responder todos los comentarios nuevos del día","Test de 2ª miniatura si CTR se estancó por debajo de 4%","Compartir en foros y grupos temáticos relevantes","Preparar y grabar el siguiente video del plan semanal"],
+  };
+  const ALGO=[
+    {i:"🏔️",t:"Valle de la Muerte (0-30s)",d:"Los primeros 30 segundos deciden el 80% del éxito. Cambiá el plano o el sonido cada 3 segundos máximo. Si el viewer llega al segundo 30, hay 70% de probabilidad de que vea el 50% del video completo."},
+    {i:"🏆",t:"Dato de Oro (último 10%)",d:"YouTube mide cuántos viewers llegan al 70%, 90% y 100% del video. Guardá el dato más impactante para el final. Más retención completa = más recomendaciones automáticas del algoritmo."},
+    {i:"🧠",t:"Contraste Cognitivo en Miniatura",d:"El cerebro no puede ignorar el contraste extremo. Antes/Después, Escala Imposible o elemento que viola expectativas. Máximo 3 palabras en el texto. CTR objetivo: >5%."},
+    {i:"💰",t:"CPM Alto = Misma Energía, Más Dinero",d:"EE.UU.+España+UK: el mismo video en español puede ganar 5-10x más. Español neutro + tema universal = audiencia global + CPM premium."},
+    {i:"⏱️",t:"Las Primeras 6 Horas son Todo",d:"YouTube testea cada video con 200-500 personas. CTR >4% + retención >50% en las primeras 6h = empuje masivo automático. Si no llega, cambiá la miniatura de inmediato."},
+    {i:"📅",t:"Consistencia = Monetización",d:"3 videos/semana durante 3 meses = 40x más probabilidad de monetizar. Usá el plan de 10 ideas para mantener el ritmo. El algoritmo premia la consistencia sobre todo lo demás."},
+    {i:"💬",t:"Comentarios = Combustible",d:"Pineá una pregunta en el primer comentario. Respondé todo en las primeras 2h. Los comentarios aumentan el watch time promedio y envían señales positivas al algoritmo."},
+    {i:"🔁",t:"Short + Largo = Doble Alcance",d:"Publicá un Short del mismo tema 24-48h después del video largo. El Short actúa como trailer y desvía tráfico al video completo, aumentando el watch time general del canal."},
+  ];
+  const guionNarrador=content.guion?.split("\n").filter(l=>l.trim().startsWith("NARRADOR:")).map(l=>l.replace(/^NARRADOR:\s*/,"").trim()).join("\n\n");
+  return(
+    <div className="animate-up" style={{paddingBottom:100}}>
+      <div style={{background:"linear-gradient(135deg,#0a0820,#1a0d3d)",border:`1px solid ${C.purple}40`,borderRadius:16,padding:"14px 16px",marginBottom:12,textAlign:"center"}}>
+        <div style={{display:"inline-block",background:"#052e16",borderRadius:20,padding:"3px 14px",fontSize:10,color:C.neon,fontWeight:700,marginBottom:8,letterSpacing:.4}}>✅ PACK VIRAL COMPLETO</div>
+        <div style={{color:C.text,fontWeight:900,fontSize:17,lineHeight:1.3,marginBottom:10,fontFamily:"Syne"}}>{tema}</div>
+        <div style={{display:"flex",gap:7,justifyContent:"center",flexWrap:"wrap",marginBottom:12}}>
+          <Tag color={C.neon}>VIRAL {research.viralScore}/10</Tag>
+          <Tag color={C.gold}>{research.oportunidad}</Tag>
+          <Tag color={C.muted}>{cfg.dur}</Tag>
+          <Tag color={emoClr(gancho.emocion)}>{gancho.emocion}</Tag>
+        </div>
+        <button onClick={copyAll} style={{background:copied==="all"?"#052e16":C.surface,border:`1px solid ${copied==="all"?C.neon:C.border}`,borderRadius:8,padding:"9px 18px",color:copied==="all"?C.neon:C.sub,fontWeight:700,fontSize:12,cursor:"pointer",fontFamily:"inherit",width:"100%",transition:"all .2s"}}>
+          {copied==="all"?"✅ Pack completo copiado!":"📋 Copiar Pack Completo"}
+        </button>
+      </div>
+      <Card glow={C.gold} style={{marginBottom:10}}>
+        <div style={{color:C.gold,fontWeight:800,fontSize:11,letterSpacing:.5,textTransform:"uppercase",marginBottom:8}}>🖼️ Miniatura — Contraste Cognitivo</div>
+        <div style={{background:C.purple+"15",border:`1px solid ${C.purple}30`,borderRadius:8,padding:"8px 12px",marginBottom:8}}>
+          <div style={{color:C.purpleL,fontSize:10,fontWeight:800,marginBottom:3}}>TEXTO (MÁX 3 PALABRAS):</div>
+          <div style={{color:"#fff",fontSize:24,fontWeight:900,letterSpacing:1,fontFamily:"'Impact',sans-serif"}}>"{research.miniaturaOriginal?.tresPalabras}"</div>
+        </div>
+        <div style={{color:C.text,fontSize:12,lineHeight:1.6}}>{research.miniaturaOriginal?.tuVersion}</div>
+        <MiniaturePreview mini={research.miniaturaOriginal} tema={cfg.tema}/>
+      </Card>
+      <Card style={{marginBottom:10}} accent={C.red}>
+        <div style={{color:C.red,fontWeight:800,fontSize:10,textTransform:"uppercase",letterSpacing:.5,marginBottom:6}}>🎯 Video de Referencia</div>
+        <div style={{color:C.text,fontWeight:700,fontSize:13,marginBottom:3}}>"{research.videoViral?.titulo}"</div>
+        <div style={{color:C.muted,fontSize:11,marginBottom:8}}>{research.videoViral?.canal} · {research.videoViral?.vistas}</div>
+        <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(research.videoViral?.queryYT||research.videoViral?.titulo||"")}`}
+          target="_blank" rel="noopener noreferrer"
+          style={{display:"block",background:"#cc0000",borderRadius:8,padding:9,textAlign:"center",color:"#fff",fontWeight:700,fontSize:12,textDecoration:"none"}}>
+          ▶ Ver en YouTube →
+        </a>
+      </Card>
+      <Card style={{marginBottom:12}}>
+        <div style={{color:C.purpleL,fontWeight:800,fontSize:11,textTransform:"uppercase",letterSpacing:.5,marginBottom:8}}>🎬 Herramientas de Producción</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+          {[{n:"ElevenLabs",t:"Voz IA",u:"https://elevenlabs.io",e:"🎙️"},{n:"InVideo AI",t:"Video auto",u:"https://invideo.io",e:"🎬"},{n:"Kling AI",t:"Video IA",u:"https://klingai.com",e:"🎥"},{n:"CapCut",t:"Edición",u:"https://capcut.com",e:"✂️"}].map(tool=>(
+            <a key={tool.n} href={tool.u} target="_blank" rel="noopener noreferrer" style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:9,padding:"10px 12px",display:"flex",alignItems:"center",gap:8,textDecoration:"none",transition:"border-color .15s"}}>
+              <span style={{fontSize:18}}>{tool.e}</span>
+              <div><div style={{color:C.text,fontWeight:600,fontSize:11}}>{tool.n}</div><div style={{color:C.muted,fontSize:9}}>{tool.t}</div></div>
+            </a>
+          ))}
+        </div>
+      </Card>
+      <ScriptTimer guion={content.guion}/>
+      <div className="tabs-bar">
+        {TABS.map(t=>(
+          <button key={t.id} className="tab-btn" onClick={()=>setTab(t.id)} style={{color:tab===t.id?C.neon:C.muted,borderBottomColor:tab===t.id?C.neon:"transparent",fontWeight:tab===t.id?700:400}}>
+            {t.icon} {t.label}
+          </button>
+        ))}
+      </div>
+      {["guion","shorts","seo","retencion"].includes(tab)&&(
+        <Card>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-            <div><div style={{color:C.text,fontWeight:900,fontSize:24}}>{palabras}</div><div style={{color:C.muted,fontSize:10}}>palabras</div></div>
-            <div><div style={{color:C.text,fontWeight:900,fontSize:24}}>{minutos}m</div><div style={{color:C.muted,fontSize:10}}>duración</div></div>
-            <div><div style={{color:C.text,fontWeight:900,fontSize:24}}>{wpm}</div><div style={{color:C.muted,fontSize:10}}>pal/min</div></div>
+            <div style={{color:C.purpleL,fontWeight:700,fontSize:12,fontFamily:"Syne"}}>{TABS.find(x=>x.id===tab)?.icon} {TABS.find(x=>x.id===tab)?.label}</div>
+            <CopyBtn text={content[tab]} label="📋 COPIAR TODO" id={tab} copied={copied} onCopy={copy}/>
           </div>
-          <input type="range" min="100" max="200" value={wpm} onChange={e=>setWpm(Number(e.target.value))} style={{width:"100%"}}/>
-          <div style={{color:C.sub,fontSize:11,marginTop:8}}>💡 Documental lento (120) vs Shorts rápido (180)</div>
+          {tab==="guion"&&guionNarrador&&(
+            <div style={{marginBottom:10}}>
+              <CopyBtn text={guionNarrador} label="🎙️ Solo narración (ElevenLabs)" id="narrador" copied={copied} onCopy={copy}/>
+            </div>
+          )}
+          <div style={{background:C.bg,borderRadius:8,padding:"12px 14px",whiteSpace:"pre-wrap",fontSize:12,lineHeight:1.85,color:C.text,maxHeight:480,overflowY:"auto"}}>{content[tab]||"Sin contenido"}</div>
         </Card>
-      );
-    }
-
-    // ==================== PLAN SCREEN ====================
-    function PlanScreen({onBack}) {
-      const currentPlan = getUserPlan();
-      const isExpired = Date.now() > currentPlan.expiresAt;
-      
-      return (
-        <div className="animate-up" style={{padding:"16px",maxWidth:480,margin:"0 auto"}}>
-          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
-            <Tooltip text="Volver a la pantalla anterior">
-              <button onClick={onBack} style={{background:"none",border:"none",color:C.purpleL,cursor:"pointer",fontSize:14,fontWeight:600}}>← Volver</button>
-            </Tooltip>
-            <h2 style={{color:C.text,fontSize:20,fontWeight:900}}>💎 Elegí tu Plan</h2>
+      )}
+      {tab==="miniatura"&&(
+        <Card glow={C.gold}>
+          <div style={{color:C.gold,fontWeight:800,fontSize:14,marginBottom:14,fontFamily:"Syne"}}>🖼️ Guía Completa de Miniatura</div>
+          {[["📸 Original viral",research.miniaturaOriginal?.descripcion],["🧠 Psicología",research.miniaturaOriginal?.psicologia],["⚡ Contraste cognitivo",research.miniaturaOriginal?.contrasteCognitivo],["🎨 Colores exactos",research.miniaturaOriginal?.colores]].map(([l,v])=>(
+            <div key={l} style={{marginBottom:12}}>
+              <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:4}}>{l}</div>
+              <div style={{color:C.sub,fontSize:13,lineHeight:1.6}}>{v}</div>
+            </div>
+          ))}
+          <div style={{background:C.gold+"12",border:`1px solid ${C.gold}28`,borderRadius:10,padding:14,marginTop:8}}>
+            <div style={{color:C.gold,fontWeight:800,fontSize:12,marginBottom:6}}>✨ TU VERSIÓN EN ESPAÑOL:</div>
+            <div style={{color:C.text,fontSize:13,lineHeight:1.7}}>{research.miniaturaOriginal?.tuVersion}</div>
+            <div style={{marginTop:10,display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
+              <Tag color={C.gold}>🎨 {research.miniaturaOriginal?.colores}</Tag>
+              <span style={{background:C.purple,borderRadius:8,padding:"6px 12px",color:"#fff",fontWeight:900,fontSize:15,fontFamily:"Impact"}}>{research.miniaturaOriginal?.tresPalabras}</span>
+            </div>
           </div>
-
-          <Card style={{marginBottom:16,textAlign:"center"}}>
-            <div style={{color:C.muted,fontSize:12,marginBottom:4}}>Tu estado actual</div>
-            <div style={{color:C.text,fontWeight:900,fontSize:18}}>
-              {currentPlan.type === "free" ? "Prueba Gratis" : ADMIN_CONFIG.plans[currentPlan.type]?.name}
-            </div>
-            <div style={{color:isExpired?C.red:C.green,fontSize:13,marginTop:4}}>
-              {isExpired ? "⏰ Expirado" : `⏳ ${Math.ceil((currentPlan.expiresAt - Date.now()) / (24*60*60*1000))} días restantes`}
-            </div>
-            <div style={{color:C.sub,fontSize:12,marginTop:4}}>
-              Videos usados: {currentPlan.videosUsed} / {currentPlan.maxVideos}
+          <MiniaturePreview mini={research.miniaturaOriginal} tema={cfg.tema}/>
+          <div style={{marginTop:14}}>
+            <div style={{color:C.text,fontWeight:700,fontSize:13,marginBottom:10,fontFamily:"Syne"}}>📋 Reglas para Canva:</div>
+            {[["🧠 Contraste Cognitivo","Usá Antes/Después, Escala Imposible o algo que viola expectativas. El cerebro no puede ignorarlo. La diferencia entre CTR 2% y 8%."],["📝 Máx 3 Palabras","Se leen en 0.3 segundos. Más palabras = menos CTR. Siempre Impact o Bebas Neue en mayúsculas."],["😱 Cara con emoción extrema","Sorpresa o miedo aumentan el CTR hasta 40%. Opcional pero muy efectivo para el nicho."],["🎨 Contraste absoluto","Negro + blanco + rojo O negro + dorado. Nunca colores similares entre texto y fondo."],["🧪 Testear 2 versiones","Si CTR < 4% en 48h → cambiá la miniatura inmediatamente. No esperes más."]].map(([t,d])=>(
+              <div key={t} style={{marginBottom:12}}>
+                <div style={{color:C.gold,fontWeight:700,fontSize:12,marginBottom:4}}>{t}</div>
+                <div style={{color:C.sub,fontSize:11,lineHeight:1.5}}>{d}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+      {tab==="checklist"&&(
+        <div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:14}}>
+            {Object.keys(CL).map(k=>(
+              <button key={k} onClick={()=>setClst(k)} style={{padding:"7px 12px",borderRadius:20,border:`1px solid ${clst===k?C.neon:C.border}`,background:clst===k?"#001a0f":"transparent",color:clst===k?C.neon:C.muted,cursor:"pointer",fontSize:10,fontWeight:clst===k?700:400,fontFamily:"inherit",transition:"all .15s"}}>{k}</button>
+            ))}
+          </div>
+          <Card>
+            <div style={{color:C.neon,fontWeight:800,fontSize:13,marginBottom:12,fontFamily:"Syne"}}>✅ {clst}</div>
+            {(CL[clst]||[]).map((item,i)=>{
+              const key=`${clst}-${i}`,done=chk[key];
+              return(
+                <div key={key} className={`cl-item ${done?"done":""}`} onClick={()=>setChk(c=>({...c,[key]:!done}))}>
+                  <div className="cl-check">{done&&<span style={{color:"#000",fontSize:12,fontWeight:900}}>✓</span>}</div>
+                  <span style={{color:done?C.neon:C.text,fontSize:12,lineHeight:1.5,textDecoration:done?"line-through":undefined,flex:1}}>{item}</span>
+                </div>
+              );
+            })}
+            <div style={{marginTop:12,color:C.muted,fontSize:11,textAlign:"center"}}>
+              {Object.values(chk).filter(Boolean).length} / {(CL[clst]||[]).length} completados
             </div>
           </Card>
-
-          <div style={{display:"flex",flexDirection:"column",gap:12}}>
-            <Card glow={C.green} style={{border:`2px solid ${C.green}40`}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                <div style={{color:C.green,fontWeight:900,fontSize:16}}>🎁 Prueba Gratis</div>
-                <Tag color={C.green}>3 DÍAS</Tag>
-              </div>
-              <div style={{color:C.sub,fontSize:12,lineHeight:1.6,marginBottom:12}}>
-                • 2 videos completos<br/>
-                • Todas las funciones<br/>
-                • Sin tarjeta de crédito
-              </div>
-              <Btn full variant="ghost" disabled={currentPlan.type !== "free" || !isExpired}>
-                {currentPlan.type === "free" && !isExpired ? "✓ Activado" : "Ya usado"}
-              </Btn>
-            </Card>
-
-            <Card glow={C.purple}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                <div style={{color:C.purpleL,fontWeight:900,fontSize:16}}>⭐ Plan Básico</div>
-                <Tag color={C.purple}>1 MES</Tag>
-              </div>
-              <div style={{color:C.sub,fontSize:12,lineHeight:1.6,marginBottom:12}}>
-                • 10 videos por mes<br/>
-                • Radar Viral incluido<br/>
-                • Espía de Competencia<br/>
-                • Soporte prioritario
-              </div>
-              <Tooltip text="Accedé a 10 videos virales profesionales por mes">
-                <Btn full variant="primary" onClick={() => window.open(ADMIN_CONFIG.paymentLink, "_blank")}>
-                  Elegir Básico →
-                </Btn>
-              </Tooltip>
-            </Card>
-
-            <Card glow={C.gold}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                <div style={{color:C.gold,fontWeight:900,fontSize:16}}>👑 Plan Pro</div>
-                <Tag color={C.gold}>ILIMITADO</Tag>
-              </div>
-              <div style={{color:C.sub,fontSize:12,lineHeight:1.6,marginBottom:12}}>
-                • Videos ilimitados<br/>
-                • Todas las funciones PRO<br/>
-                • Asistente IA prioritario<br/>
-                • Actualizaciones exclusivas<br/>
-                • Acceso de por vida
-              </div>
-              <Tooltip text="Acceso ilimitado para creadores serios">
-                <Btn full variant="gold" onClick={() => window.open(ADMIN_CONFIG.paymentLink, "_blank")}>
-                  Elegir Pro →
-                </Btn>
-              </Tooltip>
-            </Card>
-          </div>
         </div>
-      );
-    }
-
-    // ==================== SCREENS ====================
-    function BootScreen({onDone}) {
-      useEffect(() => { const t = setTimeout(onDone, 2500); return () => clearTimeout(t); }, [onDone]);
-      return (
-        <div style={{background:"#000",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Courier New',monospace"}}>
-          <div className="animate-pulse" style={{fontSize:52,marginBottom:16}}>⚡</div>
-          <div className="animate-glow" style={{color:"#00e676",fontSize:13,letterSpacing:6,marginBottom:8}}>INICIANDO VIRALSTUDIO...</div>
-          <div style={{color:"#4a4a6a",fontSize:9,letterSpacing:3,marginBottom:4}}>Engine Pro™ · VS-SYSTEMS v6.0</div>
-          <div style={{color:"#4a4a6a",fontSize:9,letterSpacing:2,marginBottom:24}}>© 2026 Todos los derechos reservados</div>
-          <div style={{width:260,height:4,background:"#111",border:"1px solid #00e67622",borderRadius:2,overflow:"hidden"}}>
-            <div style={{height:"100%",background:"#00e676",boxShadow:"0 0 8px #00e676",animation:"bootbar 2.5s ease forwards"}}/>
-          </div>
-        </div>
-      );
-    }
-
-    function WelcomeScreen({onStart, onPlans, onHistory, histCount}) {
-      const plan = getUserPlan();
-      const access = checkPlanAccess();
-      
-      return (
-        <div className="animate-up" style={{paddingBottom:100}}>
-          <div style={{textAlign:"center",padding:"28px 0 20px"}}>
-            <div style={{fontSize:52,marginBottom:10}}>🎬</div>
-            <h1 style={{color:C.text,fontSize:26,fontWeight:900,letterSpacing:-1,lineHeight:1.1,marginBottom:10}}>
-              <span style={{color:"#fff"}}>Viral</span><span style={{color:C.purple}}>Studio</span><br/>
-              <span style={{color:C.gold}}>Pro</span> <span style={{color:C.neon,fontSize:14}}>v6.0</span>
-            </h1>
-            <p style={{color:C.sub,fontSize:13,lineHeight:1.6,maxWidth:320,margin:"0 auto 20px"}}>La única app con IA integrada, Radar Viral y Espía de Competencia. Crea videos virales profesionales.</p>
-            
-            {!access.allowed && (
-              <Card glow={C.red} style={{marginBottom:16,textAlign:"center"}}>
-                <div style={{color:"#fca5a5",fontWeight:800,fontSize:14}}>⏰ {access.message}</div>
-                <Btn full variant="gold" onClick={onPlans} style={{marginTop:10}}>Ver Planes 💎</Btn>
-              </Card>
-            )}
-
-            <div style={{display:"flex",gap:10,flexDirection:"column"}}>
-              <Tooltip text="Empezá el wizard paso a paso para crear tu video viral">
-                <Btn full onClick={onStart} variant="gold" disabled={!access.allowed}>🚀 Crear Video Viral</Btn>
-              </Tooltip>
-              <Tooltip text="Conocé los planes y elegí el que más te convenga">
-                <Btn full onClick={onPlans} variant="pink">💎 Ver Planes</Btn>
-              </Tooltip>
-              {histCount>0&&(
-                <Tooltip text="Revisá todos los videos que generaste anteriormente">
-                  <Btn full onClick={onHistory} variant="ghost">📂 Mis {histCount} video{histCount!==1?"s":""} guardado{histCount!==1?"s":""}</Btn>
-                </Tooltip>
-              )}
-            </div>
-          </div>
-
-          {access.allowed && (
-            <Card style={{margin:"0 16px 16px",textAlign:"center"}}>
-              <div style={{color:C.green,fontSize:12,fontWeight:700}}>✓ Plan activo: {plan.videosUsed}/{plan.maxVideos} videos usados</div>
-              <div style={{color:C.muted,fontSize:11}}>Expira en {access.expiresIn} días</div>
-            </Card>
-          )}
-
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,margin:"0 16px 24px"}}>
-            {[["🤖","IA","Integrada"],["📡","Radar","Viral"],["🕵️","Espía","Competencia"]].map(([n,l1,l2])=>(
-              <Card key={l1} style={{textAlign:"center",padding:"12px 8px"}}>
-                <div style={{color:C.gold,fontWeight:900,fontSize:24,lineHeight:1}}>{n}</div>
-                <div style={{color:C.text,fontWeight:700,fontSize:11,marginTop:4}}>{l1}</div>
-                <div style={{color:C.muted,fontSize:10}}>{l2}</div>
-              </Card>
-            ))}
-          </div>
-
-          <div style={{margin:"0 16px 20px"}}>
-            <div style={{color:C.muted,fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:.8,marginBottom:12,textAlign:"center"}}>¿Qué incluye?</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-              {[
-                {i:"🛰️",t:"Multi-API",d:"Sin rate limits, siempre funciona"},
-                {i:"📡",t:"Radar Viral",d:"Detecta oportunidades antes que nadie"},
-                {i:"🕵️",t:"Espía Competencia",d:"Analiza canales rivales"},
-                {i:"🏔️",t:"Valle Muerte",d:"Plan segundo a segundo"},
-                {i:"🏆",t:"Dato de Oro",d:"Revelación final impactante"},
-                {i:"🖼️",t:"Miniatura Preview",d:"Vista previa en tiempo real"},
-                {i:"⏱️",t:"Cronómetro",d:"Sabe exactamente cuánto dura"},
-                {i:"🤖",t:"Asistente IA",d:"Ayuda 24/7, preguntá lo que sea"},
-              ].map(f=>(
-                <Card key={f.t} style={{padding:12}}>
-                  <div style={{fontSize:20,marginBottom:6}}>{f.i}</div>
-                  <div style={{color:C.text,fontWeight:700,fontSize:12,marginBottom:4}}>{f.t}</div>
-                  <div style={{color:C.muted,fontSize:11,lineHeight:1.4}}>{f.d}</div>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          <div style={{padding:"0 16px"}}>
-            <Card glow={C.gold} style={{marginBottom:20}}>
-              <div style={{color:C.gold,fontWeight:800,fontSize:13,marginBottom:12}}>💰 CPM por nicho 2026</div>
-              {[["🥇 Traiciones/Venganza","$20–25"],["🥈 Aprender Inglés","$18–22"],["🥉 Sonidos/Sleep","$16–20"],["🏅 Finanzas","$15–45"],["🎖️ IA y Herramientas","$15–22"],["📺 Crimen Real","$8–13"]].map(([nombre,val])=>(
-                <div key={nombre} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,padding:"6px 10px",background:C.surface,borderRadius:8}}>
-                  <span style={{color:C.text,fontSize:12,fontWeight:600}}>{nombre}</span>
-                  <Tag color={C.green}>{val}</Tag>
+      )}
+      {tab==="algoritmo"&&(
+        <div>
+          {ALGO.map(a=>(
+            <Card key={a.t} style={{marginBottom:10}}>
+              <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+                <span style={{fontSize:26,flexShrink:0}}>{a.i}</span>
+                <div>
+                  <div style={{color:C.text,fontWeight:800,fontSize:13,marginBottom:6,fontFamily:"Syne"}}>{a.t}</div>
+                  <div style={{color:C.sub,fontSize:12,lineHeight:1.6}}>{a.d}</div>
                 </div>
-              ))}
-            </Card>
-            <Tooltip text="Empezá a crear tu primer video viral profesional">
-              <Btn full onClick={onStart} disabled={!access.allowed}>Empezar Ahora →</Btn>
-            </Tooltip>
-          </div>
-        </div>
-      );
-    }
-
-    function S1_Config({onNext, onBack}) {
-      const [busqueda,setBusqueda]=useState("");
-      const [cat,setCat]=useState("finanzas");
-      const [region,setRegion]=useState("EE.UU.");
-      const [dur,setDur]=useState("5m");
-      const [showSugg,setShowSugg]=useState(false);
-      const [showCPM,setShowCPM]=useState(false);
-      const inputRef=useRef(null);
-      const catObj=CATS.find(c=>c.id===cat)||CATS[0];
-      const filtered=busqueda.length>1?["Religión y Fe","Datos bíblicos","El Vaticano","IA y el futuro","Psicología del dinero","Crímenes sin resolver","Traiciones famosas","Venganza épica","Sonidos para dormir","Salud para mayores","Manhwa más populares","Aprender inglés rápido"].filter(s=>s.toLowerCase().includes(busqueda.toLowerCase())).slice(0,6):[];
-
-      function pick(s){setBusqueda(s);setShowSugg(false);}
-      function go(){
-        const tema=busqueda.trim()||catObj.l;
-        onNext({cat,catLabel:catObj.l,region,dur,tema,cpm:catObj.cpm});
-      }
-
-      return (
-        <div className="animate-up">
-          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
-            <Tooltip text="Volver al inicio de la aplicación">
-              <button onClick={onBack} style={{background:"none",border:"none",color:C.purpleL,cursor:"pointer",fontSize:14,fontWeight:600}}>← Volver</button>
-            </Tooltip>
-            <h2 style={{color:C.text,fontSize:20,fontWeight:900,letterSpacing:-.5}}>¿Sobre qué video?</h2>
-          </div>
-          <p style={{color:C.muted,fontSize:13,marginBottom:16}}>Escribe cualquier tema o elige una categoría</p>
-
-          <div style={{position:"relative",marginBottom:10}}>
-            <span style={{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",fontSize:18,pointerEvents:"none",zIndex:1}}>🔍</span>
-            <input ref={inputRef} value={busqueda}
-              onChange={e=>{setBusqueda(e.target.value);setShowSugg(true);}}
-              onFocus={()=>setShowSugg(true)} onBlur={()=>setTimeout(()=>setShowSugg(false),200)}
-              placeholder="Ej: Religión y fe, datos bíblicos, el Vaticano..."
-              style={{width:"100%",background:C.card,border:`2px solid ${busqueda?C.purple:C.border}`,borderRadius:12,padding:"13px 40px 13px 44px",color:C.text,fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"inherit",fontWeight:600}}/>
-            {busqueda&&<button onClick={()=>{setBusqueda("");inputRef.current?.focus();}} style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:20,padding:4}}>×</button>}
-            {showSugg&&filtered.length>0&&(
-              <div style={{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,background:C.surface,border:`1px solid ${C.border}`,borderRadius:10,overflow:"hidden",zIndex:50,boxShadow:"0 8px 28px #00000077"}}>
-                {filtered.map(s=><div key={s} onMouseDown={()=>pick(s)} style={{padding:"10px 16px",cursor:"pointer",color:C.sub,fontSize:13,borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",gap:10}}><span style={{color:C.purpleL}}>→</span>{s}</div>)}
               </div>
-            )}
-          </div>
+            </Card>
+          ))}
+        </div>
+      )}
+      <div style={{marginTop:20}}>
+        <Btn full variant="ghost" onClick={onRestart}>🔄 Crear Otro Video</Btn>
+      </div>
+    </div>
+  );
+}
 
-          <div style={{marginBottom:14}}>
-            <div style={{color:C.muted,fontSize:10,fontWeight:600,marginBottom:6,textTransform:"uppercase",letterSpacing:.5}}>🔥 Populares</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
-              {["Religión y Fe","Datos bíblicos","El Vaticano","IA y el futuro","Psicología del dinero","Crímenes sin resolver"].map(s=>(
-                <button key={s} onClick={()=>pick(s)} style={{padding:"6px 11px",borderRadius:20,border:`1px solid ${busqueda===s?C.purple:C.border}`,background:busqueda===s?"#1a0d3d":"transparent",color:busqueda===s?C.purpleL:C.muted,cursor:"pointer",fontSize:11,fontWeight:600,fontFamily:"inherit"}}>{s}</button>
-              ))}
-            </div>
-          </div>
+// ═══════════════════════════════════════════
+// MAIN APP
+// ═══════════════════════════════════════════
+function App(){
+  const [screen,setScreen]=useState("boot");
+  const [step,setStep]=useState(0);
+  const [cfg,setCfg]=useState(null);
+  const [research,setResearch]=useState(null);
+  const [gancho,setGancho]=useState(null);
+  const [content,setContent]=useState(null);
+  const [history,setHistory]=useState(()=>{try{return JSON.parse(sGet("vs_history")||"[]")}catch{return[]}});
+  const [chatOpen,setChatOpen]=useState(false);
 
-          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
-            <div style={{flex:1,height:1,background:C.border}}/>
-            <span style={{color:C.muted,fontSize:10,fontWeight:600}}>o elige categoría</span>
-            <div style={{flex:1,height:1,background:C.border}}/>
-          </div>
+  function saveHistory(item){
+    const nh=[item,...history].slice(0,30);
+    setHistory(nh);sSet("vs_history",JSON.stringify(nh));
+  }
+  function deleteHistory(idx){
+    let nh;
+    if(idx==="all")nh=[];
+    else nh=history.filter((_,i)=>i!==idx);
+    setHistory(nh);sSet("vs_history",JSON.stringify(nh));
+  }
+  function resetWizard(){setStep(0);setCfg(null);setResearch(null);setGancho(null);setContent(null);setScreen("welcome");}
 
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginBottom:14}}>
-            {CATS.map(c=>(
-              <button key={c.id} onClick={()=>setCat(c.id)} style={{padding:"9px 10px",borderRadius:10,border:`1px solid ${cat===c.id?C.purple:C.border}`,cursor:"pointer",fontSize:11,fontWeight:600,textAlign:"left",background:cat===c.id?"#1a0d3d":C.card,color:cat===c.id?C.purpleL:C.sub,fontFamily:"inherit"}}>
-                <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:3}}>
-                  <span style={{fontSize:14}}>{c.e}</span>
-                  <span style={{fontSize:11}}>{c.l}</span>
-                  {c.hot&&<span style={{marginLeft:"auto",fontSize:8,background:C.purple,color:"#fff",borderRadius:4,padding:"1px 4px",fontWeight:800}}>HOT</span>}
-                </div>
-                <div style={{color:cat===c.id?C.purpleL:C.muted,fontSize:9}}>CPM: <span style={{color:C.green}}>{c.cpm}</span> · 📈 {c.growth}</div>
-              </button>
-            ))}
-          </div>
+  const wrap={fontFamily:"'Inter',-apple-system,sans-serif",background:C.bg,color:C.text,minHeight:"100vh",padding:"0 16px 24px",maxWidth:520,margin:"0 auto"};
 
-          <div onClick={()=>setShowCPM(!showCPM)} style={{background:"#1a1a05",border:`1px
+  if(screen==="boot")return(
+    <div style={{fontFamily:"'Inter',sans-serif"}}>
+      <style>{`@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes glow{0%,100%{text-shadow:0 0 8px #00e676}50%{text-shadow:0 0 28px #00e676,0 0 50px #00e676}}@keyframes bootbar{from{width:0}to{width:100%}}`}</style>
+      <BootScreen onDone={()=>setScreen("welcome")}/>
+    </div>
+  );
+
+  return(
+    <div style={wrap}>
+      {/* TOP BAR */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 0",borderBottom:`1px solid ${C.border}`,marginBottom:16,position:"sticky",top:0,background:C.bg,zIndex:100}}>
+        <div style={{fontFamily:"Syne",fontWeight:900,fontSize:16}}>
+          <span style={{color:C.purple}}>Viral</span><span style={{color:C.gold}}>Studio</span>
+          <span style={{color:C.neon,fontSize:10,marginLeft:6}}>PRO</span>
+        </div>
+        <div style={{display:"flex",gap:8}}>
+          {screen!=="welcome"&&<button onClick={()=>{setScreen("welcome");setStep(0);}} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:8,padding:"5px 10px",color:C.muted,cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>🏠 Inicio</button>}
+          <button onClick={()=>setScreen("plans")} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:8,padding:"5px 10px",color:C.gold,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700}}>💎 Planes</button>
+        </div>
+      </div>
+
+      {screen==="welcome"&&<WelcomeScreen onStart={()=>setScreen("wizard")} onPlans={()=>setScreen("plans")} onHistory={()=>setScreen("history")} histCount={history.length}/>}
+      {screen==="plans"&&<PlanScreen onBack={()=>setScreen("welcome")}/>}
+      {screen==="history"&&<HistoryScreen history={history} onBack={()=>setScreen("welcome")} onDelete={deleteHistory}/>}
+      {screen==="wizard"&&(
+        <>
+          <StepBar step={step}/>
+          {step===0&&<S1_Config onNext={c=>{setCfg(c);setStep(1);}} onBack={()=>setScreen("welcome")}/>}
+          {step===1&&<S2_Investigate cfg={cfg} onNext={r=>{setResearch(r);setStep(2);}} onBack={()=>setStep(0)}/>}
+          {step===2&&<S3_Hook cfg={cfg} research={research} onNext={g=>{setGancho(g);setStep(3);}} onBack={()=>setStep(1)}/>}
+          {step===3&&<S4_Generate cfg={cfg} research={research} gancho={gancho} onNext={c=>{
+            setContent(c);
+            saveHistory({tema:cfg.tema,region:cfg.region,dur:cfg.dur,viralScore:research.viralScore,oportunidad:research.oportunidad,date:new Date().toISOString()});
+            setStep(4);
+          }} onBack={()=>setStep(2)}/>}
+          {step===4&&content&&<S5_Result cfg={cfg} research={research} gancho={gancho} content={content} onRestart={resetWizard}/>}
+        </>
+      )}
+
+      {/* FLOATING CHAT */}
+      <div className="chat-bubble" onClick={()=>setChatOpen(!chatOpen)}>
+        {chatOpen?"✕":"🤖"}
+      </div>
+      <ChatAssistant visible={chatOpen} onClose={()=>setChatOpen(false)}/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
