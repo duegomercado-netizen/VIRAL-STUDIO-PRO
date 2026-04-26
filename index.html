@@ -1,1 +1,292 @@
-Descargar ViralStudio Pro v7.0 Completo
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ViralStudio Pro v11 — Miguel Mercado 942</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06060e;--sur:#0d0d1c;--card:#111125;--brd:#1e1e38;
+  --pur:#7c3aed;--purl:#a78bfa;--purd:#5b21b6;
+  --gld:#f59e0b;--amb:#d97706;--grn:#10b981;--red:#ef4444;
+  --cyn:#06b6d4;--neo:#00e676;--org:#f97316;
+  --txt:#f0efff;--sub:#9ca3af;--mut:#6b7280;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;-webkit-font-smoothing:antialiased;max-width:480px;margin:0 auto;min-height:100vh}
+.sy{font-family:'Syne',sans-serif}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes boot{from{width:0}to{width:100%}}
+@keyframes glow{0%,100%{text-shadow:0 0 8px #00e676}50%{text-shadow:0 0 28px #00e676,0 0 60px #00e676}}
+@keyframes pop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+.au{animation:up .3s both}.pop{animation:pop .35s both}.glo{animation:glow 2s infinite}.pulse{animation:pulse 1.4s infinite}
+
+#boot{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;text-align:center}
+#toast{position:fixed;top:66px;left:50%;transform:translateX(-50%);min-width:240px;max-width:90vw;background:linear-gradient(135deg,#3b0764,#1e0d47);border:1px solid var(--pur);border-radius:14px;padding:12px 20px;z-index:8000;text-align:center;display:none;box-shadow:0 8px 32px rgba(124,58,237,.6)}
+#toast.on{display:block;animation:pop .3s both}
+#loader{position:fixed;inset:0;background:rgba(6,6,14,.97);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:5000;text-align:center;padding:30px}
+#loader.on{display:flex}
+.spin{width:48px;height:48px;border:3px solid var(--brd);border-top-color:var(--pur);border-radius:50%;animation:spin .7s linear infinite}
+#tb{position:sticky;top:0;background:rgba(6,6,14,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--brd);z-index:100;padding:0 14px}
+#tb-in{display:flex;justify-content:space-between;align-items:center;height:52px}
+#app{padding:0 14px 100px}
+.sc{display:none}.sc.on{display:block;animation:up .3s both}
+.card{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;touch-action:manipulation}
+.btn:active{transform:scale(.95);opacity:.85}
+.btn.full{width:100%;display:flex}
+.btn.sm{padding:6px 11px;font-size:11px;border-radius:8px}
+.bp{background:linear-gradient(135deg,var(--pur),var(--purd));color:#fff;box-shadow:0 4px 16px rgba(124,58,237,.3)}
+.bg{background:linear-gradient(135deg,var(--gld),var(--amb));color:#000;box-shadow:0 4px 16px rgba(245,158,11,.3)}
+.bgh{background:transparent;border:1px solid var(--brd);color:var(--sub)}
+.bred{background:linear-gradient(135deg,var(--red),#b91c1c);color:#fff}
+.bgrn{background:linear-gradient(135deg,var(--grn),#059669);color:#fff;box-shadow:0 4px 16px rgba(16,185,129,.3)}
+.bcn{background:linear-gradient(135deg,var(--cyn),#0284c7);color:#fff}
+.bor{background:linear-gradient(135deg,var(--org),#ea580c);color:#fff}
+input,textarea,select{font-family:'DM Sans',sans-serif;background:var(--sur);border:1px solid var(--brd);color:var(--txt);border-radius:10px;padding:10px 13px;font-size:14px;outline:none;transition:border-color .2s;width:100%;box-sizing:border-box}
+input:focus,textarea:focus,select:focus{border-color:var(--pur);box-shadow:0 0 0 2px rgba(124,58,237,.15)}
+select option{background:var(--sur)}
+.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--brd);scrollbar-width:none;margin-bottom:12px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:8px 10px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--mut);border:none;background:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.tab.on{color:var(--neo);border-bottom-color:var(--neo)}
+.sbox{background:var(--bg);border-radius:8px;padding:12px;white-space:pre-wrap;font-size:12px;line-height:1.9;color:var(--txt);max-height:600px;overflow-y:auto;border:1px solid var(--brd)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.3px}
+.cpb{background:transparent;border:1px solid var(--brd);color:var(--mut);padding:5px 10px;font-size:10px;cursor:pointer;border-radius:7px;font-family:'DM Sans',sans-serif;font-weight:700;transition:all .2s}
+.cpb.ok{background:#052e16;border-color:var(--neo);color:var(--neo)}
+.bk{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid var(--brd);border-radius:8px;padding:6px 12px;color:var(--purl);cursor:pointer;font-size:12px;font-weight:700;font-family:'DM Sans',sans-serif;transition:all .15s}
+.bk:hover{border-color:var(--pur);background:rgba(124,58,237,.1)}
+.srow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.sbar{flex:1;height:6px;background:var(--brd);border-radius:3px;overflow:hidden}
+.sfill{height:100%;border-radius:3px;transition:width .6s}
+.pb-w{height:4px;background:var(--brd);border-radius:3px;overflow:hidden}
+.pb{height:100%;background:linear-gradient(90deg,var(--pur),var(--purl));border-radius:3px;transition:width .5s}
+.chip{display:inline-flex;align-items:center;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:700;background:var(--sur);border:1px solid var(--brd);color:var(--txt);cursor:pointer;transition:all .15s;flex-shrink:0}
+.chip:active,.chip.on{background:rgba(124,58,237,.2);border-color:var(--pur);color:var(--purl)}
+.app-card{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:border-color .15s}
+.app-card:hover{border-color:var(--pur)}
+.ytc{background:var(--card);border:1px solid var(--brd);border-radius:12px;overflow:hidden;margin-bottom:8px;cursor:pointer;transition:all .2s;position:relative}
+.ytc:hover,.ytc.sel{border-color:var(--neo)}
+.ytc.sel::before{content:'✅';position:absolute;top:8px;right:8px;font-size:14px;z-index:2}
+.tip-c{background:#0a1628;border:1px solid #1e3a5f;border-radius:12px;padding:12px 14px;margin-bottom:8px;position:relative;overflow:hidden}
+.tip-c::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--cyn),var(--pur));border-radius:3px 0 0 3px}
+.tip-c.g::before{background:linear-gradient(180deg,var(--gld),var(--org))}
+.tip-c.r::before{background:linear-gradient(180deg,var(--red),var(--purl))}
+.tip-c.gr::before{background:linear-gradient(180deg,var(--neo),var(--grn))}
+.mini-canvas{width:100%;aspect-ratio:16/9;border-radius:12px;border:2px solid var(--gld);overflow:hidden;position:relative;margin-bottom:10px;background:#111;cursor:pointer}
+.mini-canvas canvas{width:100%;height:100%;display:block}
+.shimmer{background:linear-gradient(90deg,var(--sur) 25%,var(--brd) 50%,var(--sur) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+.trend-c{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.trend-c:hover{border-color:var(--pur);transform:translateY(-1px)}
+.comm-c{background:var(--sur);border-radius:10px;padding:10px 12px;margin-bottom:6px;border-left:3px solid var(--pur)}
+.firma{text-align:center;padding:20px 0 8px;color:var(--mut);font-size:10px;letter-spacing:1px}
+.firma span{color:var(--gld);font-weight:800}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.cat-btn{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:10px 6px;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif;transition:all .15s;font-size:11px;color:var(--txt);font-weight:600}
+.cat-btn:active,.cat-btn.on{border-color:var(--pur);background:rgba(124,58,237,.15);color:var(--purl)}
+.sim-card{display:flex;gap:10px;background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:10px;margin-bottom:7px;cursor:pointer;transition:all .15s}
+.sim-card:hover{border-color:var(--pur)}
+.sim-thumb{width:90px;height:54px;border-radius:7px;object-fit:cover;background:var(--sur);flex-shrink:0}
+.ht-box{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.ht-tag{background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:16px;padding:3px 10px;font-size:11px;color:var(--purl);font-weight:600;cursor:pointer;transition:all .15s}
+.ht-tag:hover{background:rgba(124,58,237,.3)}
+
+/* KEY STATUS BANNER */
+.key-banner{border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600}
+.key-banner.ok{background:#052e16;border:1px solid var(--neo)44;color:var(--neo)}
+.key-banner.err{background:#1a0a0a;border:1px solid var(--red)44;color:var(--red)}
+.key-banner.warn{background:#1a1200;border:1px solid var(--gld)44;color:var(--gld)}
+</style>
+</head>
+<body>
+
+<!-- BOOT SCREEN -->
+<div id="boot">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,#0d0025,#000 70%)"></div>
+  <div style="position:relative;text-align:center;padding:20px">
+    <div class="pulse" style="font-size:52px;margin-bottom:14px">⚡</div>
+    <div class="glo sy" style="color:#00e676;font-size:12px;letter-spacing:8px;margin-bottom:6px">VIRALSTUDIO PRO</div>
+    <div style="color:#444;font-size:9px;letter-spacing:2px;margin-bottom:4px">v11 · Algoritmo 2026 · Claude AI Real</div>
+    <div style="color:var(--gld);font-size:8px;letter-spacing:1px;margin-bottom:18px">by <strong>Miguel Mercado 942</strong> — Inventor</div>
+    <div style="width:260px;height:3px;background:#111;border-radius:2px;overflow:hidden;margin:0 auto">
+      <div style="height:100%;background:#00e676;box-shadow:0 0 10px #00e676;animation:boot 2.5s ease forwards"></div>
+    </div>
+    <div id="boot-msg" style="color:#333;font-size:9px;margin-top:8px">Iniciando sistema...</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <div id="t-msg" style="font-weight:900;font-size:14px;color:#fff"></div>
+  <div id="t-sub" style="color:#a78bfa;font-size:11px;margin-top:3px"></div>
+</div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="spin"></div>
+  <div id="l-msg" style="color:var(--purl);font-weight:700;font-size:14px;margin-top:16px"></div>
+  <div id="l-sub" style="color:var(--mut);font-size:11px;margin-top:4px"></div>
+  <div style="width:260px;margin-top:14px"><div class="pb-w"><div class="pb" id="l-bar" style="width:0%"></div></div></div>
+  <div id="l-step" style="color:var(--mut);font-size:10px;margin-top:8px"></div>
+</div>
+
+<!-- TOPBAR -->
+<div id="tb">
+  <div id="tb-in">
+    <div class="sy" style="font-weight:900;font-size:16px;cursor:pointer;display:flex;align-items:center;gap:4px" onclick="go('home')">
+      <span style="color:var(--purl)">Viral</span><span style="color:var(--gld)">Studio</span>
+      <span style="font-size:8px;color:var(--neo);font-weight:700;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);padding:1px 5px;border-radius:4px">v11</span>
+    </div>
+    <div style="display:flex;gap:4px;align-items:center">
+      <div id="api-status" style="display:flex;align-items:center;gap:4px;background:#0a1a0a;border:1px solid #10b98133;border-radius:20px;padding:3px 9px;cursor:pointer" onclick="go('setup')">
+        <span style="width:5px;height:5px;border-radius:50%;background:var(--mut);display:inline-block" id="status-dot"></span>
+        <span style="font-size:8px;font-weight:700;color:var(--mut)" id="status-label">APIs</span>
+      </div>
+      <button class="btn bgh sm" onclick="go('setup')" title="Configuración">⚙️</button>
+      <button class="btn bgh sm" onclick="go('hist')" title="Historial">📂</button>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+
+<!-- ══════════════ HOME ══════════════ -->
+<div class="sc on" id="s-home">
+<div style="text-align:center;padding:20px 0 14px">
+  <div style="font-size:42px;margin-bottom:8px">🎬</div>
+  <h1 class="sy" style="font-size:24px;font-weight:900;letter-spacing:-1px;margin-bottom:6px">
+    <span style="color:#fff">Viral</span><span style="color:var(--gld)">Studio</span> <span style="color:var(--purl)">Pro</span>
+  </h1>
+  <p style="color:var(--sub);font-size:12px;line-height:1.6;max-width:290px;margin:0 auto 4px">
+    Videos virales reales de YouTube → guión 100% completo → miniatura lista → ¡a publicar!
+  </p>
+  <div style="color:var(--mut);font-size:9px;letter-spacing:1px">by <span style="color:var(--gld);font-weight:700">Miguel Mercado 942</span> · Inventor</div>
+</div>
+<div style="margin-bottom:12px">
+  <div style="color:var(--mut);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:7px">📂 Explorar por Categoría</div>
+  <div class="cat-grid" id="cat-grid-home"></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+  <button class="btn bg full" onclick="go('gen')" style="padding:14px;font-size:14px;flex-direction:column;align-items:flex-start;gap:2px">
+    <span>🚀 Crear Video Viral — YouTube Real</span>
+    <span style="font-size:10px;font-weight:400;opacity:.8">Videos reales con millones de vistas → Guión + Miniatura + Hashtags</span>
+  </button>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <button class="btn bcn full" onclick="go('trends')" style="padding:11px;flex-direction:column;gap:2px">
+      <span>📈 Tendencias</span><span style="font-size:9px;opacity:.7">Lo viral ahora</span>
+    </button>
+    <button class="btn bor full" onclick="go('studio')" style="padding:11px;flex-direction:column;gap:2px">
+      <span>🎬 Studio Apps</span><span style="font-size:9px;opacity:.7">IA para crear video</span>
+    </button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <button class="btn bred full" onclick="go('spy')" style="padding:11px;flex-direction:column;gap:2px">
+      <span>🕵️ Espía</span><span style="font-size:9px;opacity:.7">Tags de rivales</span>
+    </button>
+    <button class="btn bgh full" onclick="go('hist')" style="padding:11px;flex-direction:column;gap:2px">
+      <span>📂 Historial</span><span style="font-size:9px;opacity:.7">Mis guiones</span>
+    </button>
+  </div>
+</div>
+<div class="card" style="border-color:var(--gld)33">
+  <div class="sy" style="color:var(--gld);font-weight:800;font-size:12px;margin-bottom:10px">💰 CPM por Nicho 2026</div>
+  <div id="nichos-home"></div>
+</div>
+<div class="card" style="border-color:var(--neo)22">
+  <div class="sy" style="color:var(--neo);font-weight:800;font-size:11px;margin-bottom:8px">🧠 Señales Algoritmo 2026</div>
+  <div id="algo-pills" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+</div>
+<div class="firma">by <span>Miguel Mercado 942</span> — Inventor · ViralStudio Pro v11</div>
+</div>
+
+<!-- ══════════════ SETUP ══════════════ -->
+<div class="sc" id="s-setup">
+<div style="margin:14px 0;display:flex;align-items:center;gap:8px">
+  <button class="bk" onclick="goBack()">← Volver</button>
+  <h2 class="sy" style="font-size:16px;font-weight:900">⚙️ Configuración APIs</h2>
+</div>
+
+<!-- ══ YOUTUBE KEY ══ -->
+<div class="card" style="border-color:var(--gld)33;margin-bottom:10px">
+  <div style="color:var(--gld);font-weight:800;font-size:13px;margin-bottom:4px">🔑 YouTube Data API v3</div>
+
+  <!-- Status actual -->
+  <div id="yt-key-status" style="margin-bottom:10px"></div>
+
+  <!-- Input SIEMPRE vacío, solo se usa para ingresar nueva key -->
+  <div style="font-size:11px;color:var(--mut);margin-bottom:5px">
+    Ingresá tu key para guardarla (o reemplazar la anterior):
+  </div>
+  <input type="password" id="yt-key-in" placeholder="AIzaSy..." style="margin-bottom:8px" autocomplete="off">
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+    <button class="btn bg full sm" onclick="saveKey('yt')">💾 Guardar Key</button>
+    <button class="btn bcn full sm" onclick="testYTKey()">🧪 Probar Key</button>
+  </div>
+
+  <div id="yt-test-result" style="margin-top:8px;display:none"></div>
+
+  <div style="margin-top:10px;background:#0a0a1a;border-radius:8px;padding:10px;font-size:11px;color:var(--sub);line-height:1.7">
+    <div style="color:var(--gld);font-weight:700;margin-bottom:4px">⚠️ IMPORTANTE — Restricciones de la key:</div>
+    En Google Cloud Console → Credenciales → tu key → <strong style="color:#fff">Restricciones de la aplicación: Ninguna</strong><br>
+    Si tenés "Referentes HTTP" activado, la API fallará desde esta app.
+  </div>
+</div>
+
+<!-- ══ CLAUDE KEY ══ -->
+<div class="card" style="border-color:var(--purl)33;margin-bottom:10px">
+  <div style="color:var(--purl);font-weight:800;font-size:13px;margin-bottom:4px">🤖 Claude API Key (Anthropic)</div>
+
+  <div id="cl-key-status" style="margin-bottom:10px"></div>
+
+  <div style="font-size:11px;color:var(--mut);margin-bottom:5px">
+    Ingresá tu key para guardarla (o reemplazar la anterior):
+  </div>
+  <input type="password" id="cl-key-in" placeholder="sk-ant-..." style="margin-bottom:8px" autocomplete="off">
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+    <button class="btn bp full sm" onclick="saveKey('cl')">💾 Guardar Key</button>
+    <button class="btn bgh full sm" onclick="clearKey('cl')">🗑️ Borrar Key</button>
+  </div>
+</div>
+
+<!-- ESTADO GENERAL -->
+<div class="card" style="text-align:center">
+  <div id="key-status-general"></div>
+</div>
+
+<!-- INSTRUCCIONES -->
+<div class="card" style="border-color:var(--cyn)33;margin-top:4px">
+  <div style="color:var(--cyn);font-weight:800;font-size:12px;margin-bottom:8px">📋 Cómo obtener las keys</div>
+  <div style="font-size:12px;color:var(--sub);line-height:1.9">
+    <strong style="color:#fff">1. YouTube API:</strong><br>
+    → console.cloud.google.com<br>
+    → APIs y Servicios → Habilitar APIs<br>
+    → Buscar "YouTube Data API v3" → Habilitar<br>
+    → Credenciales → Crear credencial → Clave de API<br>
+    → <strong style="color:var(--red)">Restricciones: seleccioná "Ninguna"</strong><br><br>
+    <strong style="color:#fff">2. Claude:</strong><br>
+    → console.anthropic.com → API Keys → Create Key
+  </div>
+  <div style="background:#052e16;border:1px solid var(--grn)33;border-radius:8px;padding:8px 10px;margin-top:8px">
+    <span style="color:var(--neo);font-size:11px;font-weight:700">✅ YouTube: gratis 10K/día · Claude: ~$0.003/guión completo</span>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ GENERATOR ══════════════ -->
+<div class="sc" id="s-gen">
+<div style="margin:14px 0;display:flex;align-items:center;gap:8px">
+  <button class="bk" onclick="goBack()">← Volver</button>
+  <h2 class="sy" style="font-size:16px;font-weight:900">Crear Video Viral</h2>
+</div>
+<div style="position:relative;margin-bottom:8px">
+  <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none">🔍</span>
+  <input type="text" id="topic-in" placeholder="Ej: Millonario en 1 año, IA roba empleos, Dinosaurios..." style="padding-left:40px;font-weight:600" oninput="onTopicInput(this.value)" autocompl
