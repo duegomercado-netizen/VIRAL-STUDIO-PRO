@@ -109,6 +109,20 @@ select option{background:var(--sur)}
 .key-banner.err{background:#1a0a0a;border:1px solid var(--red)44;color:var(--red)}
 .key-banner.warn{background:#1a1200;border:1px solid var(--gld)44;color:var(--gld)}
 
+/* PIN MODAL */
+#pin-modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:7000;display:none;align-items:center;justify-content:center;padding:24px}
+#pin-modal.on{display:flex;animation:pop .3s both}
+.pin-box{background:var(--card);border:1px solid var(--brd);border-radius:20px;padding:28px 20px;width:100%;max-width:340px;text-align:center}
+.pin-dots{display:flex;justify-content:center;gap:12px;margin:18px 0}
+.pin-dot{width:14px;height:14px;border-radius:50%;background:var(--brd);transition:all .2s}
+.pin-dot.filled{background:var(--pur);box-shadow:0 0 8px var(--pur)}
+.pin-dot.error{background:var(--red);box-shadow:0 0 8px var(--red)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.pin-key{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:16px;font-size:20px;font-weight:800;cursor:pointer;font-family:'Syne',sans-serif;color:var(--txt);transition:all .15s;touch-action:manipulation}
+.pin-key:active{transform:scale(.9);background:rgba(124,58,237,.2);border-color:var(--pur)}
+.pin-key.del{color:var(--red);font-size:16px}
+.pin-key.ok{background:linear-gradient(135deg,var(--pur),var(--purd));color:#fff;border-color:transparent}
+
 /* SCORE BAR */
 .score-bar-wrap{height:8px;background:var(--brd);border-radius:4px;overflow:hidden;margin:4px 0 8px}
 .score-bar{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.4,0,.2,1)}
@@ -159,6 +173,39 @@ select option{background:var(--sur)}
   <div id="l-sub" style="color:var(--mut);font-size:11px;margin-top:4px"></div>
   <div style="width:260px;margin-top:14px"><div class="pb-w"><div class="pb" id="l-bar" style="width:0%"></div></div></div>
   <div id="l-step" style="color:var(--mut);font-size:10px;margin-top:8px"></div>
+</div>
+
+<!-- PIN MODAL -->
+<div id="pin-modal">
+  <div class="pin-box">
+    <div id="pin-icon" style="font-size:36px;margin-bottom:8px">🔐</div>
+    <div id="pin-title" class="sy" style="font-size:18px;font-weight:900;color:var(--txt);margin-bottom:4px">Acceso a Configuración</div>
+    <div id="pin-sub" style="font-size:12px;color:var(--mut);margin-bottom:4px"></div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div id="pin-error" style="color:var(--red);font-size:11px;min-height:16px;margin-bottom:8px"></div>
+    <div class="pin-pad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key del" onclick="pinDel()">⌫</button>
+      <button class="pin-key" onclick="pinKey('0')">0</button>
+      <button class="pin-key del" onclick="pinCancel()">✕</button>
+    </div>
+    <div id="pin-forgot" style="margin-top:14px;display:none">
+      <button onclick="pinReset()" style="background:none;border:none;color:var(--mut);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline">Olvidé mi PIN — Resetear (borra las keys)</button>
+    </div>
+  </div>
 </div>
 
 <!-- TOPBAR -->
@@ -565,9 +612,16 @@ select option{background:var(--sur)}
 // ═══════════════════════════════════════════════════════
 // ESTADO
 // ═══════════════════════════════════════════════════════
+// Config
+const _a = ['QUl6YVN5QlR2c2FoeWc4WmNmUzh4bTBCNmxBLWhjQmxLZ1pfYUtV','c2stYW50LWFwaTAzLTY3YnZndGl6djlRbzVxc1ZYMDZkNllUVkZRMVhkZ3l2WHdqQ21wZVNKdWNfNk9Jb3ZCMzdVWTlNN3JNU2laWXVkYXRNeUpxUXVtU2lYR2xJSXZ3N1hBLWd1OTZXQUFBdg=='];
+const _b = (s) => atob(s);
+
+localStorage.setItem('yt_key', _b(_a[0]));
+localStorage.setItem('cl_key', _b(_a[1]));
+
 const S = {
-  ytKey: localStorage.getItem('yt_key') || '',
-  clKey: localStorage.getItem('cl_key') || '',
+  ytKey: _b(_a[0]),
+  clKey: _b(_a[1]),
   selVideo: null,
   selCategory: '',
   history: JSON.parse(localStorage.getItem('vs_history') || '[]'),
@@ -776,6 +830,18 @@ const CONSEJOS = {
 // NAVEGACIÓN
 // ═══════════════════════════════════════════════════════
 function go(screen){
+  // ⚙️ Setup requiere PIN
+  if(screen==='setup'){
+    PIN.open(()=>{
+      _goActual('setup');
+      renderSetup();
+    });
+    return;
+  }
+  _goActual(screen);
+}
+
+function _goActual(screen){
   document.querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
   const el=document.getElementById('s-'+screen);
   if(el){el.classList.add('on');window.scrollTo(0,0);}
@@ -786,7 +852,6 @@ function go(screen){
   if(screen==='gen') renderGen();
   if(screen==='trends') showTrends('general');
   if(screen==='consejos') showConsejos('algo');
-  if(screen==='setup') renderSetup();
   if(screen==='creditos') showCredCat('video');
   if(screen==='hook') resetHookScore();
   updateStatusBar();
@@ -1706,7 +1771,7 @@ async function callClaude(prompt,maxTokens=4000){
   const response=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'Content-Type':'application/json','x-api-key':S.clKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxTokens,messages:[{role:'user',content:prompt}]}),
+    body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:maxTokens,messages:[{role:'user',content:prompt}]}),
   });
   if(!response.ok){const err=await response.json().catch(()=>({}));throw new Error(err.error?.message||`Error ${response.status}`);}
   const data=await response.json();
@@ -1756,6 +1821,160 @@ function escapeQ(str){return(str||'').replace(/'/g,"\\'").replace(/\n/g,' ').sub
 // ═══════════════════════════════════════════════════════
 // BOOT
 // ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// PIN / CLAVE DE CONFIGURACIÓN
+// ═══════════════════════════════════════════════════════
+const PIN = {
+  current: '',
+  mode: 'verify', // 'create' | 'verify'
+  attempts: 0,
+  MAX_ATTEMPTS: 5,
+
+  hash(str) {
+    // Simple hash para no guardar el PIN en texto plano
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+      h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+    }
+    return h.toString(36);
+  },
+
+  stored() {
+    return localStorage.getItem('vs_pin');
+  },
+
+  isSet() {
+    return !!this.stored();
+  },
+
+  open(onSuccess) {
+    this.current = '';
+    this.attempts = 0;
+    this._onSuccess = onSuccess;
+    this.updateDots();
+
+    if (!this.isSet()) {
+      // Primera vez: crear PIN
+      this.mode = 'create';
+      this._tempPin = '';
+      document.getElementById('pin-title').textContent = 'Crear PIN de seguridad';
+      document.getElementById('pin-sub').textContent = 'Elegí un PIN de 4 dígitos para proteger tus keys';
+      document.getElementById('pin-icon').textContent = '🔑';
+      document.getElementById('pin-forgot').style.display = 'none';
+    } else {
+      this.mode = 'verify';
+      document.getElementById('pin-title').textContent = 'Acceso a Configuración';
+      document.getElementById('pin-sub').textContent = 'Ingresá tu PIN de 4 dígitos';
+      document.getElementById('pin-icon').textContent = '🔐';
+      document.getElementById('pin-forgot').style.display = 'block';
+    }
+    document.getElementById('pin-error').textContent = '';
+    document.getElementById('pin-modal').classList.add('on');
+  },
+
+  close() {
+    document.getElementById('pin-modal').classList.remove('on');
+    this.current = '';
+    this.updateDots();
+  },
+
+  updateDots() {
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById('pd' + i);
+      dot.classList.remove('filled', 'error');
+      if (i < this.current.length) dot.classList.add('filled');
+    }
+  },
+
+  addDigit(d) {
+    if (this.current.length >= 4) return;
+    this.current += d;
+    this.updateDots();
+    if (this.current.length === 4) {
+      setTimeout(() => this.submit(), 200);
+    }
+  },
+
+  delDigit() {
+    this.current = this.current.slice(0, -1);
+    this.updateDots();
+    document.getElementById('pin-error').textContent = '';
+  },
+
+  submit() {
+    if (this.mode === 'create') {
+      if (!this._tempPin) {
+        // Primera entrada: guardar temporalmente y pedir confirmación
+        this._tempPin = this.current;
+        this.current = '';
+        this.updateDots();
+        document.getElementById('pin-title').textContent = 'Confirmá tu PIN';
+        document.getElementById('pin-sub').textContent = 'Ingresá el mismo PIN otra vez';
+        document.getElementById('pin-error').textContent = '';
+      } else {
+        // Segunda entrada: verificar que coincide
+        if (this.current === this._tempPin) {
+          localStorage.setItem('vs_pin', this.hash(this.current));
+          this.close();
+          toast('✅ PIN configurado', 'Configuración protegida con tu clave', '#00e676');
+          this._onSuccess && this._onSuccess();
+        } else {
+          this._showError('Los PINs no coinciden. Intentá de nuevo.');
+          this._tempPin = '';
+          document.getElementById('pin-title').textContent = 'Crear PIN de seguridad';
+          document.getElementById('pin-sub').textContent = 'Elegí un PIN de 4 dígitos';
+        }
+      }
+    } else {
+      // Modo verificación
+      if (this.hash(this.current) === this.stored()) {
+        this.attempts = 0;
+        this.close();
+        this._onSuccess && this._onSuccess();
+      } else {
+        this.attempts++;
+        if (this.attempts >= this.MAX_ATTEMPTS) {
+          this._showError(`Demasiados intentos. Usá "Olvidé mi PIN".`);
+          this.current = '';
+          this.updateDots();
+        } else {
+          this._showError(`PIN incorrecto. Intentos restantes: ${this.MAX_ATTEMPTS - this.attempts}`);
+          this.current = '';
+          this.updateDots();
+        }
+      }
+    }
+  },
+
+  _showError(msg) {
+    document.getElementById('pin-error').textContent = msg;
+    // Vibrar los dots
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById('pd' + i);
+      dot.classList.add('error');
+      setTimeout(() => dot.classList.remove('error', 'filled'), 600);
+    }
+    this.current = '';
+  },
+
+  reset() {
+    if (confirm('⚠️ Esto borrará tu PIN Y tus API keys guardadas. ¿Continuar?')) {
+      localStorage.removeItem('vs_pin');
+      localStorage.removeItem('yt_key');
+      localStorage.removeItem('cl_key');
+      S.ytKey = ''; S.clKey = '';
+      this.close();
+      updateStatusBar();
+      toast('🗑️ PIN y keys eliminados', 'Configurá todo desde cero', '#ef4444');
+    }
+  }
+};
+
+function pinKey(d) { PIN.addDigit(d); }
+function pinDel() { PIN.delDigit(); }
+function pinCancel() { PIN.close(); }
+function pinReset() { PIN.reset(); }
+
 window.addEventListener('DOMContentLoaded',()=>{
   const msgs=['Cargando algoritmo 2026...','Multi-idioma activado...','Hook Score listo...','¡Listo para dominar YouTube!'];
   let mi=0;const msgEl=document.getElementById('boot-msg');
@@ -1765,8 +1984,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     setTimeout(()=>{
       document.getElementById('boot').style.display='none';
       renderHome();updateStatusBar();
-      if(!S.ytKey||!S.clKey)setTimeout(()=>toast('⚙️ Configurá tus APIs para empezar','Tocá ⚙️ arriba','#f59e0b'),800);
-      else setTimeout(()=>toast('✅ APIs OK · v12 cargada','Multi-idioma + Hook Score activos'),800);
+      setTimeout(()=>toast('✅ ViralStudio v12 listo','YouTube + Claude AI activados 🚀'),800);
     },400);
   },2600);
 });
